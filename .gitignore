@@ -1,0 +1,19 @@
+# Ignore all data folders
+data19/
+data20/
+data21/
+data22/
+data23/
+data_combined/
+recipes/
+results/
+
+# Exclude all .Rproj files (optional)
+*.Rproj
+
+# Ignore system files
+.DS_Store
+
+# Ignore screenshots
+*.png
+
