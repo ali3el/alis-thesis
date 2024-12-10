@@ -38,7 +38,7 @@ nbayes_workflow <- workflow() |>
 nbayes_params <- extract_parameter_set_dials(nbayes_model)
 
 # Create grid for tuning ----
-nbayes_grid <- grid_regular(nbayes_params, levels = 5)
+nbayes_grid <- grid_regular(nbayes_params, levels = 3)
 
 # Fit workflows/models ----
 nbayes_fit <- tune_grid(

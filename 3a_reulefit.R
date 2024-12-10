@@ -5,6 +5,7 @@ library(tidyverse)
 library(tidymodels)
 library(here)
 library(xrf)
+library(rules)
 
 # Handle common conflicts
 tidymodels_prefer()
@@ -21,9 +22,11 @@ library(doMC)
 registerDoMC(cores = parallel::detectCores(logical = TRUE))
 
 # Set RuleFit model specification
-rulefit_model <- linear_reg() |> 
-  set_engine("xrf") |> 
-  set_mode("classification")
+rulefit_model <- rule_fit(
+  mode = "classification",
+  penalty = tune()
+  ) |> 
+  set_engine("xrf")
 
 
 rulefit_workflow <- workflow() |> 
@@ -31,8 +34,8 @@ rulefit_workflow <- workflow() |>
   add_recipe(ks_recipe_t)
 
 
-rulefit_params <- parameters(max_depth(), min_n(), penalty())
-rulefit_grid <- grid_regular(rulefit_params, levels = 5)
+rulefit_params <- extract_parameter_set_dials(rulefit_model)
+rulefit_grid <- grid_regular(rulefit_params, levels = 3)
 
 rulefit_fit <- tune_grid(
   rulefit_workflow,
