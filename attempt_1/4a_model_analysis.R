@@ -82,5 +82,19 @@ rulefit_a_acc <- rulefit_result |>
 
 table_a_accuracy <- bind_rows(log_a_acc, dtree_a_acc, knn_a_acc, nbayes_a_acc, rulefit_a_acc) |> 
   select(model, mean, std_err, n) |> 
-  arrange(mean)
+  arrange(mean) |> 
+  distinct()
 table_a_accuracy
+
+dtree_autoplot_a <- autoplot(dtree_fit, metric = "accuracy")
+knn_autoplot_a <- autoplot(knn_fit, metric = "accuracy")
+rulefit_autoplot_a <- autoplot(rulefit_fit, metric = "accuracy")
+# nbayes_autoplot_a <- autoplot(nbayes_fit, metric = "accuracy")
+
+save(table_a_accuracy, dtree_autoplot_a,
+     knn_autoplot_a, rulefit_autoplot_a,
+     file = here("results/metric_results_a.rda"))
+
+
+
+

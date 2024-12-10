@@ -6,7 +6,7 @@ library(tidymodels)
 library(here)
 
 
-load(here("results/data_split.rda"))
+load(here("attempt_1/results/data_split.rda"))
 
 # handle common conflicts
 tidymodels_prefer()
@@ -47,7 +47,7 @@ ks_recipe_t <- recipe(depression_ever ~ ., data = data_train) |>
 prep(ks_recipe_t) |> 
   bake(new_data = NULL)
 
-save(ks_recipe, ks_recipe_t, file = "recipes/ks_recipes.rda")
+save(ks_recipe, ks_recipe_t, file = "attempt_1/recipes/ks_recipes.rda")
 
 
 

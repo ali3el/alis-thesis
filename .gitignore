@@ -5,8 +5,10 @@ data21/
 data22/
 data23/
 data_combined/
-recipes/
-results/
+attempt_1/recipes/
+attempt_1/results/
+attempt_2/recipes/
+attempt_2/results/
 
 # Exclude all .Rproj files (optional)
 *.Rproj
