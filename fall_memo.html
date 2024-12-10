@@ -3047,8 +3047,21 @@ vertical-align: -.125em;
 <body>
 
 <div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
-<div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-  
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#data-collection-and-cleaning" id="toc-data-collection-and-cleaning" class="nav-link" data-scroll-target="#data-collection-and-cleaning">Data Collection and Cleaning</a></li>
+  <li><a href="#model-development" id="toc-model-development" class="nav-link" data-scroll-target="#model-development">Model Development</a>
+  <ul class="collapse">
+  <li><a href="#implemented-models" id="toc-implemented-models" class="nav-link" data-scroll-target="#implemented-models">Implemented Models</a></li>
+  <li><a href="#hyperparameter-tuning" id="toc-hyperparameter-tuning" class="nav-link" data-scroll-target="#hyperparameter-tuning">Hyperparameter Tuning</a></li>
+  <li><a href="#challenges" id="toc-challenges" class="nav-link" data-scroll-target="#challenges">Challenges</a></li>
+  </ul></li>
+  </ul>
+</nav>
 </div>
 <main class="content" id="quarto-document-content">
 
@@ -3097,6 +3110,31 @@ Github Repo Link
 <p><a href="https://github.com/ali3el/alis-thesis.git">Link to Repository</a></p>
 </div>
 </div>
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+<p>This memo provides an update on the progress of my thesis project, which focuses on understanding the extent to which we can predict whether someone has ever experienced depression in their life based on demographic factors such as sexual orientation, ethnicity, race, and other variables. This work is motivated by my interest in examining disparities among different demographic groups in relation to mental health outcomes, with a specific focus on the mental health of LGBTQ+ migrants. I aim to explore the unique challenges faced by individuals who hold these identities and compare their experiences to those of individuals without these identities or those who hold only one of them. Progress has been made in data preparation, feature engineering, and model development.</p>
+</section>
+<section id="data-collection-and-cleaning" class="level1">
+<h1>Data Collection and Cleaning</h1>
+<p>The dataset for this thesis was sourced from the <a href="https://www.cdc.gov/nchs/nhis/index.html">National Health Interview Survey (NHIS)</a>, which provides detailed information on the health, demographic, and socioeconomic characteristics of individuals in the United States. Data from multiple years (2019-2023) were consolidated into a single dataset, resulting in a robust sample of over 100,000 observations.</p>
+<p>In the data cleaning process, consistent variable naming conventions were applied across all datasets to ensure uniformity. For example, variables such as <code>EDUC_A</code> and <code>MAXEDUC_A</code> were renamed to <code>education_level</code> and <code>max_education_level</code>, respectively, to improve clarity and consistency. Missing columns were added where necessary, and missing values were handled using mode imputation for categorical variables (e.g., imputing the most common value for region) and median imputation for numerical variables (e.g., filling missing values in age with the dataset’s median age).</p>
+<p>Additionally, variable types were standardized to align with the requirements of various modeling approaches. For instance, binary variables like depression_ever and anxiety_ever were converted into factors with levels “Yes” and “No,” while ordinal variables such as life_satisfaction were encoded with ordered levels ranging from “Very dissatisfied” to “Very satisfied.” These steps were essential to prepare the dataset for feature engineering and subsequent modeling tasks, ensuring its quality and usability for analysis.</p>
+</section>
+<section id="model-development" class="level1">
+<h1>Model Development</h1>
+<section id="implemented-models" class="level2">
+<h2 class="anchored" data-anchor-id="implemented-models">Implemented Models</h2>
+<p>For this classification problem, I selected models that are both effective for classification and interpretable, aligning with the goals of the thesis. The models implemented so far include K-Nearest Neighbors (KNN), Naive Bayes, Logistic Regression, Decision Trees, and RuleFit. These models were developed and tested using the tidymodels framework, which was utilized for model specification, workflows, and hyperparameter tuning.</p>
+</section>
+<section id="hyperparameter-tuning" class="level2">
+<h2 class="anchored" data-anchor-id="hyperparameter-tuning">Hyperparameter Tuning</h2>
+<p>To optimize model performance, I implemented grid search with 5-fold cross-validation. Currently, I am running one repeat of the 5-fold cross-validation to manage computational time, given the size of the dataset (over 100,000 observations). This approach provides a balance between robust model evaluation and runtime efficiency. I plan to increase the number of repeats once runtime challenges are addressed to improve model stability and reliability.</p>
+</section>
+<section id="challenges" class="level2">
+<h2 class="anchored" data-anchor-id="challenges">Challenges</h2>
+<p>The main challenge encountered during this stage is the significant runtime required for model training and hyperparameter tuning, given the large dataset and complexity of 5-fold cross-validation. Although parallel processing has been implemented to improve runtime efficiency, training remains time-consuming. To address this, I am exploring computational alternatives such as running models on high-performance servers or utilizing cloud-based solutions.</p>
+</section>
+</section>
 
 </main>
 <!-- /main column -->

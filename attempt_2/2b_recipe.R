@@ -16,8 +16,9 @@ set.seed(301)
 # M1 recipe - just groups
 ## for non tree (parametric) models 
 
-m1_recipe <- recipe(depression_ever ~ data_group, data = data_train) |> 
-  #step_rm(year) |> 
+m1_recipe <- recipe(depression_ever ~ data_group + region + urban_rural + race_category +
+                      age + sex + hispanic_ethnicity + hispanic_and_race + hispanic_details, 
+                    data = data_train) |> 
   step_impute_mode(all_nominal_predictors()) |>  # For categorical variables
   step_impute_median(all_numeric_predictors()) |>  # For numeric variables
   step_novel(all_nominal_predictors()) |> 
@@ -32,7 +33,9 @@ prep(m1_recipe) |>
   bake(new_data = NULL)
 
 ## for  tree (non-parametric) models 
-m1_recipe_t <- recipe(depression_ever ~ data_group, data = data_train) |> 
+m1_recipe_t <- recipe(depression_ever ~ data_group + region + urban_rural + race_category +
+                        age + sex + hispanic_ethnicity + hispanic_and_race + hispanic_details, 
+                      data = data_train) |> 
   # Remove other unnecessary variables
   #step_rm(year) |> 
   step_impute_mode(all_nominal_predictors()) |>  # For categorical variables

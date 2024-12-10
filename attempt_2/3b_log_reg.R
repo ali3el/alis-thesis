@@ -28,7 +28,7 @@ logistic_workflow <- workflow() |>
   add_recipe(m1_recipe)
 
 # fit workflows/models ----
-logistic_fit <- fit_resamples(logistic_workflow,
+logistic_fit_b <- fit_resamples(logistic_workflow,
                               resamples = data_fold,
                               control = control_resamples(
                                 save_workflow = TRUE,
@@ -37,5 +37,5 @@ logistic_fit <- fit_resamples(logistic_workflow,
 
 # when tuning we need to make a grid
 # write out results (fitted/trained workflows) ----
-save(logistic_fit, file = "attempt_2/results/b_logistic_fit.rda")
+save(logistic_fit_b, file = "attempt_2/results/b_logistic_fit.rda")
 

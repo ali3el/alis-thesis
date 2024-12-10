@@ -24,3 +24,32 @@ from: markdown+emoji
 [Link to Repository](https://github.com/ali3el/alis-thesis.git)
 
 :::
+
+# Introduction
+
+This memo provides an update on the progress of my thesis project, which focuses on understanding the extent to which we can predict whether someone has ever experienced depression in their life based on demographic factors such as sexual orientation, ethnicity, race, and other variables. This work is motivated by my interest in examining disparities among different demographic groups in relation to mental health outcomes, with a specific focus on the mental health of LGBTQ+ migrants. I aim to explore the unique challenges faced by individuals who hold these identities and compare their experiences to those of individuals without these identities or those who hold only one of them. Progress has been made in data preparation, feature engineering, and model development.
+
+
+# Data Collection and Cleaning
+
+The dataset for this thesis was sourced from the [National Health Interview Survey (NHIS)](https://www.cdc.gov/nchs/nhis/index.html), which provides detailed information on the health, demographic, and socioeconomic characteristics of individuals in the United States. Data from multiple years (2019-2023) were consolidated into a single dataset, resulting in a robust sample of over 100,000 observations.
+
+In the data cleaning process, consistent variable naming conventions were applied across all datasets to ensure uniformity. For example, variables such as `EDUC_A` and `MAXEDUC_A` were renamed to `education_level` and `max_education_level`, respectively, to improve clarity and consistency. Missing columns were added where necessary, and missing values were handled using mode imputation for categorical variables (e.g., imputing the most common value for region) and median imputation for numerical variables (e.g., filling missing values in age with the dataset's median age).
+
+Additionally, variable types were standardized to align with the requirements of various modeling approaches. For instance, binary variables like depression_ever and anxiety_ever were converted into factors with levels "Yes" and "No," while ordinal variables such as life_satisfaction were encoded with ordered levels ranging from "Very dissatisfied" to "Very satisfied." These steps were essential to prepare the dataset for feature engineering and subsequent modeling tasks, ensuring its quality and usability for analysis.
+
+
+# Model Development
+
+## Implemented Models
+
+For this classification problem, I selected models that are both effective for classification and interpretable, aligning with the goals of the thesis. The models implemented so far include K-Nearest Neighbors (KNN), Naive Bayes, Logistic Regression, Decision Trees, and RuleFit. These models were developed and tested using the tidymodels framework, which was utilized for model specification, workflows, and hyperparameter tuning.
+
+## Hyperparameter Tuning
+
+To optimize model performance, I implemented grid search with 5-fold cross-validation. Currently, I am running one repeat of the 5-fold cross-validation to manage computational time, given the size of the dataset (over 100,000 observations). This approach provides a balance between robust model evaluation and runtime efficiency. I plan to increase the number of repeats once runtime challenges are addressed to improve model stability and reliability.
+
+## Challenges
+
+The main challenge encountered during this stage is the significant runtime required for model training and hyperparameter tuning, given the large dataset and complexity of 5-fold cross-validation. Although parallel processing has been implemented to improve runtime efficiency, training remains time-consuming. To address this, I am exploring computational alternatives such as running models on high-performance servers or utilizing cloud-based solutions.
+
