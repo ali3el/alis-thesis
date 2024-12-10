@@ -1,0 +1,26 @@
+---
+title: "Depression Prediction - Memo"
+subtitle: |
+  | Senior Thesis
+author: "Ali Slayie"
+date: today
+
+format:
+  html:
+    toc: true
+    embed-resources: true
+    
+execute:
+  echo: true
+  warning: false
+
+from: markdown+emoji 
+---
+
+::: {.callout-tip icon=false}
+
+## Github Repo Link
+
+[Link to Repository](https://github.com/ali3el/alis-thesis.git)
+
+:::
