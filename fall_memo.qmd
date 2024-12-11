@@ -27,6 +27,7 @@ from: markdown+emoji
 
 # Introduction
 
+
 This memo provides an update on the progress of my thesis project, which focuses on understanding the extent to which we can predict whether someone has ever experienced depression in their life based on demographic factors such as sexual orientation, ethnicity, race, and other variables. This work is motivated by my interest in examining disparities among different demographic groups in relation to mental health outcomes, with a specific focus on the mental health of LGBTQ+ migrants. I aim to explore the unique challenges faced by individuals who hold these identities and compare their experiences to those of individuals without these identities or those who hold only one of them. Progress has been made in data preparation, feature engineering, and model development.
 
 
@@ -37,6 +38,11 @@ The dataset for this thesis was sourced from the [National Health Interview Surv
 In the data cleaning process, consistent variable naming conventions were applied across all datasets to ensure uniformity. For example, variables such as `EDUC_A` and `MAXEDUC_A` were renamed to `education_level` and `max_education_level`, respectively, to improve clarity and consistency. Missing columns were added where necessary, and missing values were handled using mode imputation for categorical variables (e.g., imputing the most common value for region) and median imputation for numerical variables (e.g., filling missing values in age with the dataset's median age).
 
 Additionally, variable types were standardized to align with the requirements of various modeling approaches. For instance, binary variables like depression_ever and anxiety_ever were converted into factors with levels "Yes" and "No," while ordinal variables such as life_satisfaction were encoded with ordered levels ranging from "Very dissatisfied" to "Very satisfied." These steps were essential to prepare the dataset for feature engineering and subsequent modeling tasks, ensuring its quality and usability for analysis.
+
+
+## Target Variable Selection and Problem Type
+
+I chose "depression_ever" which is a binary variable as the primary target (outcome) variable. Thus, this is a classification problem. 
 
 
 # Model Development
@@ -53,3 +59,81 @@ To optimize model performance, I implemented grid search with 5-fold cross-valid
 
 The main challenge encountered during this stage is the significant runtime required for model training and hyperparameter tuning, given the large dataset and complexity of 5-fold cross-validation. Although parallel processing has been implemented to improve runtime efficiency, training remains time-consuming. To address this, I am exploring computational alternatives such as running models on high-performance servers or utilizing cloud-based solutions.
 
+# Feature Engineering and Recipe Development
+
+To prepare the dataset for model training and to explore different preprocessing strategies, I developed two distinct preprocessing pipelines (recipes): one for "kitchen sink" models that include all available variables, and another for feature-engineered models focused on selected demographic predictors.
+
+## Kitchen Sink Recipes
+The kitchen sink recipes were designed to utilize all variables in the dataset, maximizing the information available for model training. These recipes are suitable for exploring the potential of all predictors and identifying key variables. Two versions were created:
+
+For Non-Tree (Parametric) Models: This recipe includes steps for imputing missing values (mode for categorical variables, median for numeric), handling novel levels, creating dummy variables for categorical predictors, removing zero-variance predictors, and normalizing all predictors to align with parametric model assumptions.
+For Tree (Non-Parametric) Models: While tree-based models are less sensitive to scaling and normalization, this recipe includes one-hot encoding for categorical variables, ensuring compatibility with the modeling framework. Steps to handle missing values, novel levels, and zero-variance predictors are also included.
+These recipes enable the models to evaluate the impact of all available predictors without prior feature selection, providing a baseline for model performance.
+
+## Feature-Engineered Recipes
+To investigate specific research hypotheses and improve model interpretability, I developed feature-engineered recipes focusing on selected demographic predictors, including:
+
+data_group (a composite variable combining sexual_orientation and nativity_status)
+Geographic variables: `region`, `urban_rural`
+Demographic variables: `race_category`, `age`, `sex`
+Ethnic variables: `hispanic_ethnicity`, `hispanic_and_race`, `hispanic_details`
+These recipes were tailored for both `parametric` and `non-parametric` models:
+
+### Parametric Models:
+
+This recipe includes imputation, normalization, and dummy variable creation to meet the assumptions of parametric models.
+
+### Non-Parametric Models:
+Similar to the parametric recipe, but utilizes one-hot encoding for categorical variables and excludes normalization. The feature-engineered recipes aim to examine the relationships between mental health outcomes and key demographic variables while maintaining computational efficiency by reducing the number of predictors.
+
+
+# Results
+
+The results of the models' performance are summarized in the tables below:
+
+## Kitchen Sink Recipe
+
+Models such as Logistic Regression, RuleFit, and Decision Tree showed high performance, with Decision Tree achieving the highest mean accuracy of 0.9036. However, KNN and Naive Bayes, while still effective, performed slightly lower with a mean accuracy of 0.8748 and 0.8197, respectively as seen in @tbl-metrics-ks.
+
+## Feature-Engineering Recipe (M1)
+
+The selective feature recipe showed slightly lower overall accuracy across models compared to the Kitchen Sink recipe. The best-performing models were Logistic Regression (0.8219) and Decision Tree (0.8218) as seen in @tbl-metrics-m1. Naive Bayes and RuleFit also demonstrated competitive accuracy.
+
+```{r}
+#| echo: FALSE
+library(tidyverse)
+library(tidymodels)
+library(here)
+library(knitr)
+
+load(here("attempt_1/results/metric_results_a.rda"))
+load(here("attempt_2/results/metric_results_b.rda"))
+
+```
+```{r}
+#| label: tbl-metrics-ks
+#| tbl-cap: "Accuracy of Kitchen Sink Recipe Based Models"
+#| echo: FALSE
+table_a_accuracy |> 
+  kable()
+
+```
+
+```{r}
+#| label: tbl-metrics-m1
+#| tbl-cap: "Accuracy of Feature Engineered Recipe Based Models"
+#| echo: FALSE
+
+table_b_accuracy |> 
+  kable()
+```
+
+## Discussion
+Accuracy Trends: While the Kitchen Sink recipe leveraged the full breadth of data, it also introduced potential noise from less relevant features. This explains the slight performance drop in the selective recipe for models such as Logistic Regression and Decision Trees.
+
+## Model Insights:
+
+- Logistic Regression consistently performed well, benefiting from its parametric nature and ability to generalize from smaller feature sets.
+- Decision Trees and RuleFit demonstrated robustness, suggesting their suitability for capturing complex patterns in both recipes.
+- Naive Bayes showed stable performance but was outperformed by other methods, likely due to its independence assumption.
+- KNN, being sensitive to feature scaling, performed better with the Kitchen Sink recipe but had reduced accuracy in the selective recipe

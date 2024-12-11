@@ -3053,12 +3053,31 @@ vertical-align: -.125em;
    
   <ul>
   <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
-  <li><a href="#data-collection-and-cleaning" id="toc-data-collection-and-cleaning" class="nav-link" data-scroll-target="#data-collection-and-cleaning">Data Collection and Cleaning</a></li>
+  <li><a href="#data-collection-and-cleaning" id="toc-data-collection-and-cleaning" class="nav-link" data-scroll-target="#data-collection-and-cleaning">Data Collection and Cleaning</a>
+  <ul class="collapse">
+  <li><a href="#target-variable-selection-and-problem-type" id="toc-target-variable-selection-and-problem-type" class="nav-link" data-scroll-target="#target-variable-selection-and-problem-type">Target Variable Selection and Problem Type</a></li>
+  </ul></li>
   <li><a href="#model-development" id="toc-model-development" class="nav-link" data-scroll-target="#model-development">Model Development</a>
   <ul class="collapse">
   <li><a href="#implemented-models" id="toc-implemented-models" class="nav-link" data-scroll-target="#implemented-models">Implemented Models</a></li>
   <li><a href="#hyperparameter-tuning" id="toc-hyperparameter-tuning" class="nav-link" data-scroll-target="#hyperparameter-tuning">Hyperparameter Tuning</a></li>
   <li><a href="#challenges" id="toc-challenges" class="nav-link" data-scroll-target="#challenges">Challenges</a></li>
+  </ul></li>
+  <li><a href="#feature-engineering-and-recipe-development" id="toc-feature-engineering-and-recipe-development" class="nav-link" data-scroll-target="#feature-engineering-and-recipe-development">Feature Engineering and Recipe Development</a>
+  <ul class="collapse">
+  <li><a href="#kitchen-sink-recipes" id="toc-kitchen-sink-recipes" class="nav-link" data-scroll-target="#kitchen-sink-recipes">Kitchen Sink Recipes</a></li>
+  <li><a href="#feature-engineered-recipes" id="toc-feature-engineered-recipes" class="nav-link" data-scroll-target="#feature-engineered-recipes">Feature-Engineered Recipes</a>
+  <ul class="collapse">
+  <li><a href="#parametric-models" id="toc-parametric-models" class="nav-link" data-scroll-target="#parametric-models">Parametric Models:</a></li>
+  <li><a href="#non-parametric-models" id="toc-non-parametric-models" class="nav-link" data-scroll-target="#non-parametric-models">Non-Parametric Models:</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results">Results</a>
+  <ul class="collapse">
+  <li><a href="#kitchen-sink-recipe" id="toc-kitchen-sink-recipe" class="nav-link" data-scroll-target="#kitchen-sink-recipe">Kitchen Sink Recipe</a></li>
+  <li><a href="#feature-engineering-recipe-m1" id="toc-feature-engineering-recipe-m1" class="nav-link" data-scroll-target="#feature-engineering-recipe-m1">Feature-Engineering Recipe (M1)</a></li>
+  <li><a href="#discussion" id="toc-discussion" class="nav-link" data-scroll-target="#discussion">Discussion</a></li>
+  <li><a href="#model-insights" id="toc-model-insights" class="nav-link" data-scroll-target="#model-insights">Model Insights:</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -3119,6 +3138,10 @@ Github Repo Link
 <p>The dataset for this thesis was sourced from the <a href="https://www.cdc.gov/nchs/nhis/index.html">National Health Interview Survey (NHIS)</a>, which provides detailed information on the health, demographic, and socioeconomic characteristics of individuals in the United States. Data from multiple years (2019-2023) were consolidated into a single dataset, resulting in a robust sample of over 100,000 observations.</p>
 <p>In the data cleaning process, consistent variable naming conventions were applied across all datasets to ensure uniformity. For example, variables such as <code>EDUC_A</code> and <code>MAXEDUC_A</code> were renamed to <code>education_level</code> and <code>max_education_level</code>, respectively, to improve clarity and consistency. Missing columns were added where necessary, and missing values were handled using mode imputation for categorical variables (e.g., imputing the most common value for region) and median imputation for numerical variables (e.g., filling missing values in age with the dataset’s median age).</p>
 <p>Additionally, variable types were standardized to align with the requirements of various modeling approaches. For instance, binary variables like depression_ever and anxiety_ever were converted into factors with levels “Yes” and “No,” while ordinal variables such as life_satisfaction were encoded with ordered levels ranging from “Very dissatisfied” to “Very satisfied.” These steps were essential to prepare the dataset for feature engineering and subsequent modeling tasks, ensuring its quality and usability for analysis.</p>
+<section id="target-variable-selection-and-problem-type" class="level2">
+<h2 class="anchored" data-anchor-id="target-variable-selection-and-problem-type">Target Variable Selection and Problem Type</h2>
+<p>I chose “depression_ever” which is a binary variable as the primary target (outcome) variable. Thus, this is a classification problem.</p>
+</section>
 </section>
 <section id="model-development" class="level1">
 <h1>Model Development</h1>
@@ -3133,6 +3156,163 @@ Github Repo Link
 <section id="challenges" class="level2">
 <h2 class="anchored" data-anchor-id="challenges">Challenges</h2>
 <p>The main challenge encountered during this stage is the significant runtime required for model training and hyperparameter tuning, given the large dataset and complexity of 5-fold cross-validation. Although parallel processing has been implemented to improve runtime efficiency, training remains time-consuming. To address this, I am exploring computational alternatives such as running models on high-performance servers or utilizing cloud-based solutions.</p>
+</section>
+</section>
+<section id="feature-engineering-and-recipe-development" class="level1">
+<h1>Feature Engineering and Recipe Development</h1>
+<p>To prepare the dataset for model training and to explore different preprocessing strategies, I developed two distinct preprocessing pipelines (recipes): one for “kitchen sink” models that include all available variables, and another for feature-engineered models focused on selected demographic predictors.</p>
+<section id="kitchen-sink-recipes" class="level2">
+<h2 class="anchored" data-anchor-id="kitchen-sink-recipes">Kitchen Sink Recipes</h2>
+<p>The kitchen sink recipes were designed to utilize all variables in the dataset, maximizing the information available for model training. These recipes are suitable for exploring the potential of all predictors and identifying key variables. Two versions were created:</p>
+<p>For Non-Tree (Parametric) Models: This recipe includes steps for imputing missing values (mode for categorical variables, median for numeric), handling novel levels, creating dummy variables for categorical predictors, removing zero-variance predictors, and normalizing all predictors to align with parametric model assumptions. For Tree (Non-Parametric) Models: While tree-based models are less sensitive to scaling and normalization, this recipe includes one-hot encoding for categorical variables, ensuring compatibility with the modeling framework. Steps to handle missing values, novel levels, and zero-variance predictors are also included. These recipes enable the models to evaluate the impact of all available predictors without prior feature selection, providing a baseline for model performance.</p>
+</section>
+<section id="feature-engineered-recipes" class="level2">
+<h2 class="anchored" data-anchor-id="feature-engineered-recipes">Feature-Engineered Recipes</h2>
+<p>To investigate specific research hypotheses and improve model interpretability, I developed feature-engineered recipes focusing on selected demographic predictors, including:</p>
+<p>data_group (a composite variable combining sexual_orientation and nativity_status) Geographic variables: <code>region</code>, <code>urban_rural</code> Demographic variables: <code>race_category</code>, <code>age</code>, <code>sex</code> Ethnic variables: <code>hispanic_ethnicity</code>, <code>hispanic_and_race</code>, <code>hispanic_details</code> These recipes were tailored for both <code>parametric</code> and <code>non-parametric</code> models:</p>
+<section id="parametric-models" class="level3">
+<h3 class="anchored" data-anchor-id="parametric-models">Parametric Models:</h3>
+<p>This recipe includes imputation, normalization, and dummy variable creation to meet the assumptions of parametric models.</p>
+</section>
+<section id="non-parametric-models" class="level3">
+<h3 class="anchored" data-anchor-id="non-parametric-models">Non-Parametric Models:</h3>
+<p>Similar to the parametric recipe, but utilizes one-hot encoding for categorical variables and excludes normalization. The feature-engineered recipes aim to examine the relationships between mental health outcomes and key demographic variables while maintaining computational efficiency by reducing the number of predictors.</p>
+</section>
+</section>
+</section>
+<section id="results" class="level1">
+<h1>Results</h1>
+<p>The results of the models’ performance are summarized in the tables below:</p>
+<section id="kitchen-sink-recipe" class="level2">
+<h2 class="anchored" data-anchor-id="kitchen-sink-recipe">Kitchen Sink Recipe</h2>
+<p>Models such as Logistic Regression, RuleFit, and Decision Tree showed high performance, with Decision Tree achieving the highest mean accuracy of 0.9036. However, KNN and Naive Bayes, while still effective, performed slightly lower with a mean accuracy of 0.8748 and 0.8197, respectively as seen in <a href="#tbl-metrics-ks" class="quarto-xref">Table 1</a>.</p>
+</section>
+<section id="feature-engineering-recipe-m1" class="level2">
+<h2 class="anchored" data-anchor-id="feature-engineering-recipe-m1">Feature-Engineering Recipe (M1)</h2>
+<p>The selective feature recipe showed slightly lower overall accuracy across models compared to the Kitchen Sink recipe. The best-performing models were Logistic Regression (0.8219) and Decision Tree (0.8218) as seen in <a href="#tbl-metrics-m1" class="quarto-xref">Table 2</a>. Naive Bayes and RuleFit also demonstrated competitive accuracy.</p>
+<div class="cell">
+<div id="tbl-metrics-ks" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-metrics-ks-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table 1: Accuracy of Kitchen Sink Recipe Based Models
+</figcaption>
+<div aria-describedby="tbl-metrics-ks-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="do-not-create-environment cell caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">model</th>
+<th style="text-align: right;">mean</th>
+<th style="text-align: right;">std_err</th>
+<th style="text-align: right;">n</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Naive Bayes KS</td>
+<td style="text-align: right;">0.8196930</td>
+<td style="text-align: right;">0.0000020</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">KNN KS</td>
+<td style="text-align: right;">0.8747681</td>
+<td style="text-align: right;">0.0008847</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Logistic KS</td>
+<td style="text-align: right;">0.9023195</td>
+<td style="text-align: right;">0.0005645</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">RuleFit KS</td>
+<td style="text-align: right;">0.9024302</td>
+<td style="text-align: right;">0.0009583</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Decision Tree KS</td>
+<td style="text-align: right;">0.9035655</td>
+<td style="text-align: right;">0.0013013</td>
+<td style="text-align: right;">5</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<div class="cell">
+<div id="tbl-metrics-m1" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-metrics-m1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table 2: Accuracy of Feature Engineered Recipe Based Models
+</figcaption>
+<div aria-describedby="tbl-metrics-m1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="do-not-create-environment cell caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">model</th>
+<th style="text-align: right;">mean</th>
+<th style="text-align: right;">std_err</th>
+<th style="text-align: right;">n</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">KNN M1</td>
+<td style="text-align: right;">0.8187239</td>
+<td style="text-align: right;">0.0005024</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Naive Bayes M1</td>
+<td style="text-align: right;">0.8196930</td>
+<td style="text-align: right;">0.0000020</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">RuleFit M1</td>
+<td style="text-align: right;">0.8207452</td>
+<td style="text-align: right;">0.0003191</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Decision Tree M1</td>
+<td style="text-align: right;">0.8218621</td>
+<td style="text-align: right;">0.0001826</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Logistic M1</td>
+<td style="text-align: right;">0.8219728</td>
+<td style="text-align: right;">0.0003692</td>
+<td style="text-align: right;">5</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</figure>
+</div>
+</div>
+</section>
+<section id="discussion" class="level2">
+<h2 class="anchored" data-anchor-id="discussion">Discussion</h2>
+<p>Accuracy Trends: While the Kitchen Sink recipe leveraged the full breadth of data, it also introduced potential noise from less relevant features. This explains the slight performance drop in the selective recipe for models such as Logistic Regression and Decision Trees.</p>
+</section>
+<section id="model-insights" class="level2">
+<h2 class="anchored" data-anchor-id="model-insights">Model Insights:</h2>
+<ul>
+<li>Logistic Regression consistently performed well, benefiting from its parametric nature and ability to generalize from smaller feature sets.</li>
+<li>Decision Trees and RuleFit demonstrated robustness, suggesting their suitability for capturing complex patterns in both recipes.</li>
+<li>Naive Bayes showed stable performance but was outperformed by other methods, likely due to its independence assumption.</li>
+<li>KNN, being sensitive to feature scaling, performed better with the Kitchen Sink recipe but had reduced accuracy in the selective recipe</li>
+</ul>
 </section>
 </section>
 
