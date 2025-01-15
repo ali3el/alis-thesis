@@ -15,7 +15,7 @@ set.seed(301)
 
 # Load preprocessed data and recipe ----
 load(here("attempt_3/results/data_split.rda"))
-load(here("attempt_3/recipes/m1_recipes.rda"))
+load(here("attempt_3/recipes/m3_recipes.rda"))
 
 # Enable parallel processing ----
 library(doMC)

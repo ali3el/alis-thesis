@@ -12,8 +12,8 @@ tidymodels_prefer()
 set.seed(301)
 
 # Load preprocessed data and recipe ----
-load(here("results/data_split.rda"))
-load(here("recipes/ks_recipes.rda"))
+load(here("attempt_1/results/data_split.rda"))
+load(here("attempt_1/recipes/ks_recipes.rda"))
 
 # Enable parallel processing ----
 library(doMC)
@@ -40,6 +40,8 @@ dtree_params <- extract_parameter_set_dials(dtree_model)
 
 dtree_grid <- grid_regular(dtree_params, levels = 5)
 
+# fit model
+
 dtree_fit <- tune_grid(
   dtree_workflow,
   resamples = data_fold,        # Assuming `data_fold` is your cross-validation folds
@@ -47,5 +49,6 @@ dtree_fit <- tune_grid(
   control = control_grid(save_workflow = TRUE)
 )
 
-save(dtree_fit, file = "results/a_dtree_fit.rda")
+# save
+save(dtree_fit, file = "attempt_1/results/a_dtree_fit.rda")
 

@@ -26,7 +26,7 @@ data_split <- initial_split(combined_data,
 data_train <- data_split |> training()
 data_test <- data_split |> testing()
 
-data_fold <- vfold_cv(data_train, v = 5, repeats = 3,
+data_fold <- vfold_cv(data_train, v = 4, repeats = 3,
                       strata = depression_ever)
 
 save(data_split, data_train, data_test, data_fold, file = here("attempt_3/results/data_split.rda"))

@@ -14,8 +14,8 @@ tidymodels_prefer()
 set.seed(301)
 
 # Load preprocessed data and recipe ----
-load(here("results/data_split.rda"))
-load(here("recipes/ks_recipes.rda"))
+load(here("attempt_1/results/data_split.rda"))
+load(here("attempt_1/recipes/ks_recipes.rda"))
 
 # Enable parallel processing ----
 library(doMC)
@@ -35,7 +35,7 @@ rulefit_workflow <- workflow() |>
 
 
 rulefit_params <- extract_parameter_set_dials(rulefit_model)
-rulefit_grid <- grid_regular(rulefit_params, levels = 3)
+rulefit_grid <- grid_regular(rulefit_params, levels = 5)
 
 rulefit_fit <- tune_grid(
   rulefit_workflow,
@@ -44,6 +44,6 @@ rulefit_fit <- tune_grid(
   control = control_grid(save_workflow = TRUE)
 )
 
-save(rulefit_fit, file = "results/a_rulefit_fit.rda")
+save(rulefit_fit, file = "attempt_1/results/a_rulefit_fit.rda")
 
 

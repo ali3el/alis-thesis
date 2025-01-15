@@ -15,7 +15,7 @@ set.seed(301)
 
 # load data, recipes and fits
 load(here("attempt_2/results/data_split.rda"))
-load(here("attempt_2/recipes/m1_recipes.rda"))
+load(here("attempt_2/recipes/m2_recipes.rda"))
 
 load(here("attempt_2/results/b_logistic_fit.rda"))
 load(here("attempt_2/results/b_dtree_fit.rda"))
@@ -53,31 +53,31 @@ log_b_acc <- logistic_result |>
   filter(.metric == "accuracy") |> 
   slice_max(mean) |> 
   select(mean, n, std_err) |> 
-  mutate(model = "Logistic M1")
+  mutate(model = "Logistic M2")
 
 dtree_b_acc <- dtree_result |> 
   filter(.metric == "accuracy") |> 
   slice_max(mean) |> 
   select(mean, n, std_err) |> 
-  mutate(model = "Decision Tree M1")
+  mutate(model = "Decision Tree M2")
 
 knn_b_acc <- knn_result |> 
   filter(.metric == "accuracy") |> 
   slice_max(mean) |> 
   select(mean, n, std_err) |> 
-  mutate(model = "KNN M1")
+  mutate(model = "KNN M2")
 
 nbayes_b_acc <- nbayes_result |> 
   filter(.metric == "accuracy") |> 
   slice_max(mean) |> 
   select(mean, n, std_err) |> 
-  mutate(model = "Naive Bayes M1")
+  mutate(model = "Naive Bayes M2")
 
 rulefit_b_acc <- rulefit_result |> 
   filter(.metric == "accuracy") |> 
   slice_max(mean) |> 
   select(mean, n, std_err) |> 
-  mutate(model = "RuleFit M1")
+  mutate(model = "RuleFit M2")
 
 
 table_b_accuracy <- bind_rows(log_b_acc, dtree_b_acc, knn_b_acc, nbayes_b_acc, rulefit_b_acc) |> 

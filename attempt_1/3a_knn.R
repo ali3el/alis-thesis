@@ -11,8 +11,8 @@ tidymodels_prefer()
 # set seed
 set.seed(301)
 
-load(here("results/data_split.rda"))
-load(here("recipes/ks_recipes.rda"))
+load(here("attempt_1/results/data_split.rda"))
+load(here("attempt_1/recipes/ks_recipes.rda"))
 
 library(doMC)
 registerDoMC(cores = parallel::detectCores(logical =TRUE))
@@ -32,7 +32,7 @@ knn_workflow <- workflow() |>
 # hyperparameter tuning values ----
 knn_params <- extract_parameter_set_dials(knn_model)
 
-knn_grid <- grid_regular(knn_params, levels = 3)
+knn_grid <- grid_regular(knn_params, levels = 5)
 
 # fit workflows/models ----
 knn_fit <- tune_grid(knn_workflow,
@@ -42,4 +42,4 @@ knn_fit <- tune_grid(knn_workflow,
 
 
 # write out results (fitted/trained workflows) ----
-save(knn_fit, file = "results/a_knn_fit.rda")
+save(knn_fit, file = "attempt_1/results/a_knn_fit.rda")

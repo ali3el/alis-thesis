@@ -13,8 +13,8 @@ tidymodels_prefer()
 set.seed(301)
 
 # Load preprocessed data and recipe ----
-load(here("results/data_split.rda"))
-load(here("recipes/ks_recipes.rda"))
+load(here("attempt_1/results/data_split.rda"))
+load(here("attempt_1/recipes/ks_recipes.rda"))
 
 # Enable parallel processing ----
 library(doMC)
@@ -38,7 +38,7 @@ nbayes_workflow <- workflow() |>
 nbayes_params <- extract_parameter_set_dials(nbayes_model)
 
 # Create grid for tuning ----
-nbayes_grid <- grid_regular(nbayes_params, levels = 3)
+nbayes_grid <- grid_regular(nbayes_params, levels = 5)
 
 # Fit workflows/models ----
 nbayes_fit <- tune_grid(
@@ -49,4 +49,4 @@ nbayes_fit <- tune_grid(
 )
 
 # Save results (fitted/trained workflows) ----
-save(nbayes_fit, file = "results/a_nbayes_fit.rda")
+save(nbayes_fit, file = "attempt_1/results/a_nbayes_fit.rda")

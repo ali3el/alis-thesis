@@ -13,7 +13,7 @@ set.seed(301)
 
 # Load preprocessed data and recipe ----
 load(here("attempt_2/results/data_split.rda"))
-load(here("attempt_2/recipes/m1_recipes.rda"))
+load(here("attempt_2/recipes/m2_recipes.rda"))
 
 # Enable parallel processing ----
 library(doMC)
@@ -33,7 +33,7 @@ dtree_model <-
 # Define workflow ----
 dtree_workflow <- workflow() |> 
   add_model(dtree_model) |> 
-  add_recipe(m1_recipe_t)
+  add_recipe(m2_recipe_t)
 
 dtree_params <- extract_parameter_set_dials(dtree_model)
 

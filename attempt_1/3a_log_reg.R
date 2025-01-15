@@ -11,8 +11,8 @@ tidymodels_prefer()
 # set seed
 set.seed(301)
 
-load(here("results/data_split.rda"))
-load(here("recipes/ks_recipes.rda"))
+load(here("attempt_1/results/data_split.rda"))
+load(here("attempt_1/recipes/ks_recipes.rda"))
 
 library(doMC)
 registerDoMC(cores = parallel::detectCores(logical =TRUE))
@@ -37,4 +37,4 @@ logistic_fit <- fit_resamples(logistic_workflow,
 
 # when tuning we need to make a grid
 # write out results (fitted/trained workflows) ----
-save(logistic_fit, file = "results/a_logistic_fit.rda")
+save(logistic_fit, file = "attempt_1/results/a_logistic_fit.rda")

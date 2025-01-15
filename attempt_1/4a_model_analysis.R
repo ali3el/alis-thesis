@@ -14,14 +14,14 @@ tidymodels_prefer()
 set.seed(301)
 
 # load data, recipes and fits
-load(here("results/data_split.rda"))
-load(here("recipes/ks_recipes.rda"))
+load(here("attempt_1/results/data_split.rda"))
+load(here("attempt_1/recipes/ks_recipes.rda"))
 
-load(here("results/a_logistic_fit.rda"))
-load(here("results/a_dtree_fit.rda"))
-load(here("results/a_nbayes_fit.rda"))
-load(here("results/a_knn_fit.rda"))
-load(here("results/a_rulefit_fit.rda"))
+load(here("attempt_1/results/a_logistic_fit.rda"))
+load(here("attempt_1/results/a_dtree_fit.rda"))
+load(here("attempt_1/results/a_nbayes_fit.rda"))
+load(here("attempt_1/results/a_knn_fit.rda"))
+load(here("attempt_1/results/a_rulefit_fit.rda"))
 
 
 library(doMC)
@@ -93,7 +93,7 @@ rulefit_autoplot_a <- autoplot(rulefit_fit, metric = "accuracy")
 
 save(table_a_accuracy, dtree_autoplot_a,
      knn_autoplot_a, rulefit_autoplot_a,
-     file = here("results/metric_results_a.rda"))
+     file = here("attempt_1/results/metric_results_a.rda"))
 
 
 

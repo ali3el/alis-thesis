@@ -12,7 +12,7 @@ tidymodels_prefer()
 set.seed(301)
 
 load(here("attempt_2/results/data_split.rda"))
-load(here("attempt_2/recipes/m1_recipes.rda"))
+load(here("attempt_2/recipes/m2_recipes.rda"))
 
 library(doMC)
 registerDoMC(cores = parallel::detectCores(logical =TRUE))
@@ -25,7 +25,7 @@ logistic_model <- logistic_reg() |>
 # define workflows ----
 logistic_workflow <- workflow() |> 
   add_model(logistic_model) |> 
-  add_recipe(m1_recipe)
+  add_recipe(m2_recipe)
 
 # fit workflows/models ----
 logistic_fit_b <- fit_resamples(logistic_workflow,

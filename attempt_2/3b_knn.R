@@ -12,7 +12,7 @@ tidymodels_prefer()
 set.seed(301)
 
 load(here("attempt_2/results/data_split.rda"))
-load(here("attempt_2/recipes/m1_recipes.rda"))
+load(here("attempt_2/recipes/m2_recipes.rda"))
 
 library(doMC)
 registerDoMC(cores = parallel::detectCores(logical =TRUE))
@@ -27,7 +27,7 @@ knn_model <-
 # define workflows ----
 knn_workflow <- workflow() |> 
   add_model(knn_model) |> 
-  add_recipe(m1_recipe) 
+  add_recipe(m2_recipe) 
 
 # hyperparameter tuning values ----
 knn_params <- extract_parameter_set_dials(knn_model)
