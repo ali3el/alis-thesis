@@ -11,6 +11,8 @@ attempt_2/recipes/
 attempt_2/results/
 attempt_3/recipes/
 attempt_3/results/
+attempt_4/recipes/
+attempt_4/results/
 
 # Exclude all .Rproj files (optional)
 *.Rproj
