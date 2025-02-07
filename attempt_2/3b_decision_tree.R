@@ -38,11 +38,15 @@ dtree_workflow <- workflow() |>
 dtree_params <- extract_parameter_set_dials(dtree_model)
 
 
-dtree_grid <- grid_regular(dtree_params, levels = 3)
+dtree_grid <- grid_regular(dtree_params, levels = 5)
+
+# metrics
+custom_metrics <- metric_set(accuracy, precision, recall, f_meas, roc_auc, brier_class)
 
 dtree_fit_b <- tune_grid(
   dtree_workflow,
   resamples = data_fold,        # Assuming `data_fold` is your cross-validation folds
+  metrics = custom_metrics,
   grid = dtree_grid,
   control = control_grid(save_workflow = TRUE)
 )

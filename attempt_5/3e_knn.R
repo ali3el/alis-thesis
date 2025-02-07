@@ -34,9 +34,13 @@ knn_params <- extract_parameter_set_dials(knn_model)
 
 knn_grid <- grid_regular(knn_params, levels = 5)
 
+# metrics
+custom_metrics <- metric_set(accuracy, precision, recall, f_meas, roc_auc, brier_class)
+
 # fit workflows/models ----
 knn_fit_e <- tune_grid(knn_workflow,
                      data_fold,
+                     metrics = custom_metrics,
                      grid = knn_grid,
                      control = control_grid(save_workflow = TRUE))
 

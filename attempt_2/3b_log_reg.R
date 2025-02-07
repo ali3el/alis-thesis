@@ -27,9 +27,13 @@ logistic_workflow <- workflow() |>
   add_model(logistic_model) |> 
   add_recipe(m2_recipe)
 
+# metrics
+custom_metrics <- metric_set(accuracy, precision, recall, f_meas, roc_auc, brier_class)
+
 # fit workflows/models ----
 logistic_fit_b <- fit_resamples(logistic_workflow,
                               resamples = data_fold,
+                              metrics = custom_metrics,
                               control = control_resamples(
                                 save_workflow = TRUE,
                                 parallel_over = "everything"))

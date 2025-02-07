@@ -29,7 +29,7 @@ rulefit_model <- rule_fit(
   set_engine("xrf")
 
 
-rulefit_workflow <- workflow() |> 
+rulefit_workflow <- workflow() |>
   add_model(rulefit_model) |> 
   add_recipe(ks_recipe_t)
 
@@ -37,9 +37,13 @@ rulefit_workflow <- workflow() |>
 rulefit_params <- extract_parameter_set_dials(rulefit_model)
 rulefit_grid <- grid_regular(rulefit_params, levels = 5)
 
+# metrics
+custom_metrics <- metric_set(accuracy, precision, recall, f_meas, roc_auc, brier_class)
+
 rulefit_fit <- tune_grid(
   rulefit_workflow,
   resamples = data_fold, # `data_fold` is my cross-validation folds
+  metrics = custom_metrics,
   grid = rulefit_grid,
   control = control_grid(save_workflow = TRUE)
 )

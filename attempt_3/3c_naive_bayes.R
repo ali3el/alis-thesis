@@ -40,10 +40,14 @@ nbayes_params <- extract_parameter_set_dials(nbayes_model)
 # Create grid for tuning ----
 nbayes_grid <- grid_regular(nbayes_params, levels = 5)
 
+# metrics
+custom_metrics <- metric_set(accuracy, precision, recall, f_meas, roc_auc, brier_class)
+
 # Fit workflows/models ----
 nbayes_fit_c <- tune_grid(
   nbayes_workflow,
   resamples = data_fold, # Assuming `data_fold` is your cross-validation folds
+  metrics = custom_metrics,
   grid = nbayes_grid,
   control = control_grid(save_workflow = TRUE)
 )
