@@ -1,234 +1,65 @@
-# Analysis of trained models (comparisons)
-# Select final model
-# Fit & analyze final model
+# =============================
+# Analysis: Attempt 3 Summary Table
+# =============================
 
-# load packages ----
+# ---- Load Libraries ----
 library(tidyverse)
 library(tidymodels)
 library(here)
+library(doMC)
+library(pROC)
 
-# handle common conflicts
 tidymodels_prefer()
-
-# set seed
 set.seed(301)
 
-# load data, recipes and fits
-load(here("attempt_5/results/data_split.rda"))
-load(here("attempt_5/recipes/m4_recipes.rda"))
+# ---- Register Parallel Processing ----
+registerDoMC(cores = parallel::detectCores(logical = TRUE))
 
+# ---- Load Data and Fits ----
+load(here("attempt_5/results/data_split.rda"))
 load(here("attempt_5/results/e_logistic_fit.rda"))
 load(here("attempt_5/results/e_dtree_fit.rda"))
 load(here("attempt_5/results/e_nbayes_fit.rda"))
 load(here("attempt_5/results/e_knn_fit.rda"))
 load(here("attempt_5/results/e_rulefit_fit.rda"))
 
+# ---- Combine and Filter Metrics ----
+all_results <- bind_rows(
+  collect_metrics(logistic_fit) |> mutate(model = "Logistic"),
+  collect_metrics(dtree_fit)    |> mutate(model = "Decision Tree"),
+  collect_metrics(knn_fit)      |> mutate(model = "KNN"),
+  collect_metrics(nbayes_fit)   |> mutate(model = "Naive Bayes"),
+  collect_metrics(rulefit_fit)  |> mutate(model = "RuleFit")
+)
 
-library(doMC)
-registerDoMC(cores = parallel::detectCores(logical =TRUE))
+# ---- Keep only the best score per model per metric ----
+metrics_to_keep <- c("accuracy", "precision", "recall", "f_meas", "roc_auc")
 
-# results
+summary_metrics <- all_results |>
+  filter(.metric %in% metrics_to_keep) |>
+  group_by(model, .metric) |>
+  slice_max(mean, with_ties = FALSE) |>
+  ungroup() |>
+  select(model, .metric, mean, std_err)
 
-logistic_result <- collect_metrics(logistic_fit) |> 
-  mutate(model = "logistic")
-logistic_result
+# ---- Pivot to Wide Format and Clean ----
+summary_clean <- summary_metrics |>
+  pivot_wider(
+    names_from = .metric,
+    values_from = c(mean, std_err),
+    names_glue = "{.metric}_{.value}"
+  ) |>
+  rename_with(~ str_replace(., "_mean$", ""), ends_with("_mean")) |>
+  rename_with(~ str_replace(., "_std_err$", "std_err"), ends_with("_std_err")) |>
+  select(model, accuracy, precision, recall, f_meas, roc_auc, f_measstd_err) |>
+  rename(std_err_f_meas = f_measstd_err)
 
-dtree_result <- collect_metrics(dtree_fit) |> 
-  mutate(model = "decision tree")
-dtree_result
+# ---- Sort by F1-score ----
+summary_final_attempt5 <- summary_clean |>
+  arrange(desc(f_meas))
 
-knn_result <- collect_metrics(knn_fit) |> 
-  mutate(model = "KNN")
-knn_result
+# ---- Preview Final Table ----
+print(summary_final_attempt5)
 
-nbayes_result <- collect_metrics(nbayes_fit) |> 
-  mutate(model = "Naive Bayes")
-nbayes_result
-
-rulefit_result <- collect_metrics(rulefit_fit) |> 
-  mutate(model = "RuleFit")
-rulefit_result
-
-# accuracy
-log_e_acc <- logistic_result |> 
-  filter(.metric == "accuracy") |> 
-  slice_max(mean) |> 
-  select(mean, n, std_err) |> 
-  mutate(model = "Logistic KS")
-
-dtree_e_acc <- dtree_result |> 
-  filter(.metric == "accuracy") |> 
-  slice_max(mean) |> 
-  select(mean, n, std_err) |> 
-  mutate(model = "Decision Tree KS")
-
-knn_e_acc <- knn_result |> 
-  filter(.metric == "accuracy") |> 
-  slice_max(mean) |> 
-  select(mean, n, std_err) |> 
-  mutate(model = "KNN KS")
-
-nbayes_e_acc <- nbayes_result |> 
-  filter(.metric == "accuracy") |> 
-  slice_max(mean) |> 
-  select(mean, n, std_err) |> 
-  mutate(model = "Naive Bayes KS")
-
-rulefit_e_acc <- rulefit_result |> 
-  filter(.metric == "accuracy") |> 
-  slice_max(mean) |> 
-  select(mean, n, std_err) |> 
-  mutate(model = "RuleFit KS")
-
-
-table_e_accuracy <- bind_rows(log_e_acc, dtree_e_acc, knn_e_acc, nbayes_e_acc, rulefit_e_acc) |> 
-  select(model, mean, std_err, n) |> 
-  arrange(mean) |> 
-  distinct()
-table_e_accuracy
-
-dtree_autoplot_e_acc <- autoplot(dtree_fit, metric = "accuracy")
-knn_autoplot_e_acc <- autoplot(knn_fit, metric = "accuracy")
-rulefit_autoplot_e_acc <- autoplot(rulefit_fit, metric = "accuracy")
-# nbayes_autoplot_a <- autoplot(nbayes_fit, metric = "accuracy")
-
-# precision
-log_e_pre <- logistic_result |> 
-  filter(.metric == "precision") |> 
-  slice_max(mean) |> 
-  select(mean, n, std_err) |> 
-  mutate(model = "Logistic KS")
-
-dtree_e_pre <- dtree_result |> 
-  filter(.metric == "precision") |> 
-  slice_max(mean) |> 
-  select(mean, n, std_err) |> 
-  mutate(model = "Decision Tree KS")
-
-knn_e_pre <- knn_result |> 
-  filter(.metric == "precision") |> 
-  slice_max(mean) |> 
-  select(mean, n, std_err) |> 
-  mutate(model = "KNN KS")
-
-nbayes_e_pre <- nbayes_result |> 
-  filter(.metric == "precision") |> 
-  slice_max(mean) |> 
-  select(mean, n, std_err) |> 
-  mutate(model = "Naive Bayes KS")
-
-rulefit_e_pre <- rulefit_result |> 
-  filter(.metric == "precision") |> 
-  slice_max(mean) |> 
-  select(mean, n, std_err) |> 
-  mutate(model = "RuleFit KS")
-
-dtree_autoplot_e_pre <- autoplot(dtree_fit, metric = "precision")
-knn_autoplot_e_pre <- autoplot(knn_fit, metric = "precision")
-rulefit_autoplot_e_pre <- autoplot(rulefit_fit, metric = "precision")
-
-table_e_precision <- bind_rows(log_e_pre, dtree_e_pre, knn_e_pre, nbayes_e_pre, rulefit_e_pre) |> 
-  select(model, mean, std_err, n) |> 
-  arrange(mean) |> 
-  distinct()
-table_e_precision
-
-# f1
-log_e_f1 <- logistic_result |> 
-  filter(.metric == "f_meas") |> 
-  slice_max(mean) |> 
-  select(mean, n, std_err) |> 
-  mutate(model = "Logistic KS")
-
-dtree_e_f1 <- dtree_result |> 
-  filter(.metric == "f_meas") |> 
-  slice_max(mean) |> 
-  select(mean, n, std_err) |> 
-  mutate(model = "Decision Tree KS")
-
-knn_e_f1 <- knn_result |> 
-  filter(.metric == "f_meas") |> 
-  slice_max(mean) |> 
-  select(mean, n, std_err) |> 
-  mutate(model = "KNN KS")
-
-nbayes_e_f1 <- nbayes_result |> 
-  filter(.metric == "f_meas") |> 
-  slice_max(mean) |> 
-  select(mean, n, std_err) |> 
-  mutate(model = "Naive Bayes KS")
-
-rulefit_e_f1 <- rulefit_result |> 
-  filter(.metric == "f_meas") |> 
-  slice_max(mean) |> 
-  select(mean, n, std_err) |> 
-  mutate(model = "RuleFit KS")
-
-dtree_autoplot_e_f1 <- autoplot(dtree_fit, metric = "f_meas")
-knn_autoplot_e_f1 <- autoplot(knn_fit, metric = "f_meas")
-rulefit_autoplot_e_f1 <- autoplot(rulefit_fit, metric = "f_meas")
-
-table_e_f1 <- bind_rows(log_e_pre, dtree_e_pre, knn_e_pre, nbayes_e_pre, rulefit_e_pre) |> 
-  select(model, mean, std_err, n) |> 
-  arrange(mean) |> 
-  distinct()
-table_e_f1
-
-# recall
-log_e_rec <- logistic_result |> 
-  filter(.metric == "recall") |> 
-  slice_max(mean) |> 
-  select(mean, n, std_err) |> 
-  mutate(model = "Logistic KS")
-
-dtree_e_rec <- dtree_result |> 
-  filter(.metric == "recall") |> 
-  slice_max(mean) |> 
-  select(mean, n, std_err) |> 
-  mutate(model = "Decision Tree KS")
-
-knn_e_rec <- knn_result |> 
-  filter(.metric == "recall") |> 
-  slice_max(mean) |> 
-  select(mean, n, std_err) |> 
-  mutate(model = "KNN KS")
-
-nbayes_e_rec <- nbayes_result |> 
-  filter(.metric == "recall") |> 
-  slice_max(mean) |> 
-  select(mean, n, std_err) |> 
-  mutate(model = "Naive Bayes KS")
-
-rulefit_e_rec <- rulefit_result |> 
-  filter(.metric == "recall") |> 
-  slice_max(mean) |> 
-  select(mean, n, std_err) |> 
-  mutate(model = "RuleFit KS")
-
-dtree_autoplot_e_rec <- autoplot(dtree_fit, metric = "recall")
-knn_autoplot_e_rec <- autoplot(knn_fit, metric = "recall")
-rulefit_autoplot_e_rec <- autoplot(rulefit_fit, metric = "recall")
-
-table_e_rec <- bind_rows(log_e_rec, dtree_e_rec, knn_e_rec, nbayes_e_rec, rulefit_e_rec) |> 
-  select(model, mean, std_err, n) |> 
-  arrange(mean) |> 
-  distinct()
-table_e_rec
-
-save(table_e_accuracy, dtree_autoplot_e_acc,
-     knn_autoplot_e_acc, rulefit_autoplot_e_acc,
-     file = here("attempt_5/results/metric_results_e_acc.rda"))
-
-save(table_e_precision, dtree_autoplot_e_pre,
-     knn_autoplot_e_pre, rulefit_autoplot_e_pre,
-     file = here("attempt_5/results/metric_results_e_pre.rda"))
-
-save(table_e_rec, dtree_autoplot_e_rec,
-     knn_autoplot_e_rec, rulefit_autoplot_e_rec,
-     file = here("attempt_5/results/metric_results_e_rec.rda"))
-
-save(table_e_f1, dtree_autoplot_e_f1,
-     knn_autoplot_e_f1, rulefit_autoplot_e_f1,
-     file = here("attempt_5/results/metric_results_e_f1.rda"))
-
-
+# ---- Save RDA ----
+save(summary_final_attempt5, file = here("attempt_5/results/attempt_5_summary_table.rda"))
