@@ -42,10 +42,13 @@ dtree_grid <- grid_regular(dtree_params, levels = 5)
 
 dtree_fit_d <- tune_grid(
   dtree_workflow,
-  resamples = data_fold,        # Assuming `data_fold` is your cross-validation folds
+  resamples = data_fold,
   grid = dtree_grid,
-  control = control_grid(save_workflow = TRUE)
+  control = control_grid(save_workflow = TRUE, save_pred = TRUE)
 )
 
+
 save(dtree_fit_d, file = "attempt_4/results/d_dtree_fit.rda")
+
+
 

@@ -25,11 +25,11 @@ load(here("attempt_5/results/e_rulefit_fit.rda"))
 
 # ---- Combine and Filter Metrics ----
 all_results <- bind_rows(
-  collect_metrics(logistic_fit) |> mutate(model = "Logistic"),
-  collect_metrics(dtree_fit)    |> mutate(model = "Decision Tree"),
-  collect_metrics(knn_fit)      |> mutate(model = "KNN"),
-  collect_metrics(nbayes_fit)   |> mutate(model = "Naive Bayes"),
-  collect_metrics(rulefit_fit)  |> mutate(model = "RuleFit")
+  collect_metrics(logistic_fit_e) |> mutate(model = "Logistic"),
+  collect_metrics(dtree_fit_e)    |> mutate(model = "Decision Tree"),
+  collect_metrics(knn_fit_e)      |> mutate(model = "KNN"),
+  collect_metrics(nbayes_fit_e)   |> mutate(model = "Naive Bayes"),
+  collect_metrics(rulefit_fit_e)  |> mutate(model = "RuleFit")
 )
 
 # ---- Keep only the best score per model per metric ----
