@@ -1,0 +1,241 @@
+---
+title: "Predicting Depression from Sociological Variables using Machine Learning"
+subtitle: |
+  | Data Science Senior Thesis
+author: "Ali Slayie"
+date: today
+
+format:
+  html:
+    toc: true
+    embed-resources: true
+    
+execute:
+  echo: true
+  warning: false
+
+from: markdown+emoji 
+---
+
+::: {.callout-tip icon=false}
+
+## Github Repo Link
+
+[Link to Repository](https://github.com/ali3el/alis-thesis.git)
+
+:::
+
+```{r}
+#| echo: FALSE
+library(tidyverse)
+library(tidymodels)
+library(here)
+library(knitr)
+
+load(here("data_combined/dist_barplots.rda"))
+```
+
+# Introduction
+
+Depression remains one of the most prevalent and complex issues in public health in the United States. While the condition affects people across all demographics, its distribution and severity are far from random. Research has consistently shown how social determinants like, but not limited to, migration status, sexual orientation, and gender identity can shape mental health outcomes. However, these sociological variables are often underexplored in predictive modeling, especially in ways that reflect their impacts when looking from lenses that account for intersectionality of identities.
+
+This thesis frames mental health prediction not just as a question of individual outcomes, but as a data science challenge rooted in social complexity. By using the National Health Interview Survey (NHIS) from 2019 to 2023, I explore whether depression can be effectively predicted based on a range of demographic and social variables—particularly those tied to migration and LGBTQ+ (Lesbian, Gay, Bisexual, Transgender, Queer, and more) identity. Rather than treating these as fixed categories, this project tests the predictive strength of these identities through rigorous modeling, group balancing, and explainability techniques.
+
+The objective of this project is not only to identify which variables are most predictive of depression but also to demonstrate how thoughtful preprocessing, model evaluation, and interpretability can shed light on social disparities without compromising technical rigor. While the topic is socially meaningful, the thesis remains firmly situated in the data science domain, emphasizing methodological complexity, performance benchmarking, and scalable analysis pipelines.
+
+## Research Questions and Objectives
+
+This thesis is guided by the following core research questions:
+
+1. Can depression be predicted using sociological variables from the NHIS dataset, particularly those related to migration and LGBTQ+ identity?
+2. How do model performance and feature importance vary across four key subgroups: LGBTQ+ migrants, LGBTQ+ non-migrants, straight migrants, and straight non-migrants?
+3. What data preprocessing, balancing, and model tuning strategies yield the best predictive performance?
+4. How can explainability techniques help interpret and contextualize model predictions in a socially responsible way?
+
+The objective is to build a technically rigorous, interpretable, and generalizable predictive pipeline that demonstrates advanced data science capabilities—while using social context to inform modeling decisions rather than overshadow them.
+
+
+# Literature Review
+
+Although depression is widely studied across disciplines, most research focuses on documenting disparities rather than building predictive models. This thesis builds on a growing body of work that uses social variables—like race, gender identity, and migration status—not only as risk factors, but as inputs for interpretable prediction pipelines.
+
+Studies show that LGBTQ+ individuals and migrants face elevated risks of mental health issues due to discrimination, limited healthcare access, and chronic stress. For instance, LGB adults are more likely to experience anxiety, depression, and suicidal ideation than their heterosexual peers (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7876969/). Chronic physical conditions like hypertension, cholesterol imbalance, and cardiovascular disease—known to correlate with mood disorders—are also disproportionately present among LGBTQ+ subgroups (e.g., https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4215473/, https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10951381/).
+
+Although sociological literature often emphasizes intersectionality and minority stress, it rarely leverages large-scale datasets for predictive modeling. Meanwhile, many health data science studies exclude complex sociological variables entirely, focusing instead on biomedical predictors. This project bridges that gap by incorporating medically relevant variables (e.g., hypertension, cardiovascular health, medication use) alongside demographic and identity-based predictors.
+
+Moreover, the NHIS dataset—spanning five years—offers a unique opportunity to explore how these variables interact over time and across social categories. The inclusion of conditions such as epilepsy, COPD, and IBD, which disproportionately affect LGBTQ+ populations (https://journal.copdfoundation.org/jcopdf/id/1482/, https://healthlgbtq.org/resources-news/, https://www.health.harvard.edu/blog/ibd-and-lgbtq-how-it-can-affect-sexual-health-202306282949), further supports the case for including a broad range of health and identity variables in depression modeling.
+
+This thesis contributes not only to applied public health data science, but also to the growing conversation around fairness, transparency, and social awareness in algorithmic modeling.
+
+# Data Source Overview and Cleaning
+
+This project utilizes data from the [National Health Interview Survey (NHIS)](https://www.cdc.gov/nchs/nhis/index.html), a large-scale, nationally representative survey conducted by the U.S. Centers for Disease Control and Prevention (CDC).
+The dataset provides detailed information on the health, demographic, and socioeconomic characteristics of individuals in the United States. Data from multiple years (2019-2023) were consolidated into a single dataset, resulting in a robust sample of over 100,000 observations.
+
+In the data cleaning process, consistent variable naming conventions were applied across all datasets to ensure uniformity. For example, variables such as `EDUC_A` and `MAXEDUC_A` were renamed to `education_level` and `max_education_level`, respectively, to improve clarity and consistency. Missing columns were added where necessary, and missing values were handled using mode imputation for categorical variables (e.g., imputing the most common value for region) and median imputation for numerical variables (e.g., filling missing values in age with the dataset's median age).
+
+Additionally, variable types were standardized to align with the requirements of various modeling approaches. For instance, binary variables like `depression_ever` and `anxiety_ever` were converted into factors with levels "Yes" and "No," while ordinal variables such as `life_satisfaction` were encoded with ordered levels ranging from "Very dissatisfied" to "Very satisfied." These steps were essential to prepare the dataset for feature engineering and subsequent modeling tasks, ensuring its quality and usability for analysis.
+
+@fig-dist1 below demonstrates the distribution of the data focus group for this project:
+
+```{r}
+#| label: fig-dist1
+#| fig-cap: "Distribution of Focus Group"
+#| echo: false
+
+datagroup_var
+```
+## Target Variable
+
+The target variable is self-reported depression, measured by the NHIS variable `DEPEV_A` (Have you ever had depression?). This binary variable serves as the outcome of interest for all classification models. Given the binary nature of the target variable, the prediction problem in this project is classification.  @fig-dist2 below displays the distribution of the target variable: 
+
+```{r}
+#| label: fig-dist2
+#| fig-cap: "Distribution of Target Variable"
+#| echo: false
+
+target_var
+```
+## Key Predictors
+
+To investigate the social and structural factors influencing depression, this project used a layered modeling strategy. Predictors were added incrementally across four model types, allowing for a clear understanding of how different variable sets contribute to predictive performance. This approach also helped isolate the impact of group membership versus other confounding factors.
+
+The variable sets used in each model were:
+
+- **Model 1: Group Membership Only**  
+  Included a single categorical variable representing identity group membership: LGBTQ+ migrant, LGBTQ+ non-migrant, straight migrant, and straight non-migrant. This baseline model assessed whether group membership alone was predictive of depression outcomes. An accompanying OLS model was also run on `PHSTAT_A` (self-rated health) to capture group differences in general health perception.
+
+- **Model 2: + Demographic Variables**  
+  Added basic demographic features including:
+  - Gender identity
+  - Age
+  - Race and ethnicity
+  - Geographic region  
+  These variables were selected to control for population-level variation and explore whether group-based disparities persisted after accounting for them.
+
+- **Model 3: + Socioeconomic Status (SES) Variables**  
+  Built on Model 2 by introducing variables reflecting socioeconomic conditions:
+  - Education level
+  - Insurance coverage
+  - Marital status
+  - Parental status  
+  These indicators were intended to capture social positioning and access to resources; factors that often intersect with both identity and mental health outcomes.
+
+- **Model 4: + Mental Health Care Access and Utilization**  
+  The final model included variables related to structural access to care:
+  - Frequency of medical visits
+  - Access to a regular healthcare provider
+  - Ability to afford care
+  - Medication use  
+  These predictors allowed for the evaluation of healthcare access as a potential pathway linking group membership to depression risk.
+
+Across all models, the inclusion of predictors was informed by existing public health literature (see Literature Review) and the availability of consistently coded variables across the 2019–2023 NHIS files.
+
+## Modeling Workflow Overview
+To support experimentation and scalability, I constructed two modeling pipelines:
+
+- A **local pipeline** using a downsampled, group-balanced dataset (~40,000 observations) to quickly prototype models and test different variable sets.
+- A **high-performance pipeline** run on Northwestern University’s Quest computing cluster, using the **full NHIS dataset** (~100,000+ observations) with stratified cross-validation to ensure generalizability at scale.
+
+This two-track approach allowed for fast iteration and robust evaluation, while ensuring that all modeling decisions were transferable between the smaller and larger datasets.
+
+
+# Methods
+
+## Group Construction & Dataset Balancing
+
+To investigate how mental health outcomes differ across social identities, I constructed a categorical group variable that combines two binary indicators: LGBTQ+ identity and migration status. This resulted in four mutually exclusive groups:
+
+1. LGBTQ+ migrants  
+2. LGBTQ+ non-migrants  
+3. Straight migrants  
+4. Straight non-migrants
+
+Initial exploration of the NHIS dataset revealed substantial class imbalance—both in the distribution of the target variable (depression) and in the sizes of these identity groups. To mitigate bias and ensure fair representation across all four subgroups, I created a **balanced analytical dataset of approximately 40,000 observations**, with roughly **10,000 observations per group**.
+
+This dataset was constructed using a combination of **upsampling underrepresented groups** and **downsampling overrepresented ones**. By maintaining balance across the four identity-based groups, this approach allowed for a clearer comparison of model performance and subgroup disparities without the confounding effects of unequal sample sizes.
+
+All modeling in this thesis was conducted on this balanced dataset to align with the project’s emphasis on **equity-aware modeling**, interpretability, and methodological consistency across experiments.
+
+
+## Data Splitting & Resampling Strategy
+
+All modeling was conducted on a balanced dataset of approximately 40,000 observations, with equal representation across the four identity-based subgroups. Two resampling setups were used during the project:
+
+- **Initial modeling (local machine)** used **4-fold cross-validation with 3 repeats**, allowing for fast iteration and exploratory analysis of different variable sets and model types resulting in 12 total resamples per model.
+  
+- **Final modeling (Quest high-performance cluster)** used a more rigorous **10-fold cross-validation with 5 repeats**, resulting in 50 total resamples per model. This setup provided more stable performance estimates and was used for final evaluations and comparisons.
+
+In both setups, **stratified resampling** was used based on the binary target variable (`depression_ever`) to preserve class proportions within each fold. This ensured consistent performance measurement and reduced bias due to class imbalance.
+
+The use of two-tiered cross-validation allowed the project to balance exploratory modeling with rigorous evaluation—without compromising reproducibility.
+
+
+## Model Types
+
+To explore a range of predictive strategies, I implemented five classification algorithms using the `tidymodels` framework in R. These models were chosen to reflect varying levels of complexity, flexibility, and interpretability:
+
+- **Logistic Regression**  
+  A linear model commonly used for binary classification. It provides coefficients that are easy to interpret and serves as a strong baseline.
+
+- **Decision Tree**  
+  A rule-based model that splits data into segments based on feature thresholds. It offers transparent, human-readable logic for prediction.
+
+- **K-Nearest Neighbors (KNN)**  
+  A non-parametric model that assigns classes based on the majority label among the nearest data points. It is useful for capturing local structure in the data.
+
+- **Naive Bayes**  
+  A probabilistic model that applies Bayes’ Theorem under the assumption of feature independence. It performs surprisingly well in many high-dimensional settings.
+
+- **RuleFit**  
+  A hybrid model that extracts rules from tree ensembles and combines them with linear terms. It provides both performance and interpretability by using learned rules as features in a sparse linear model.
+
+These models were trained and evaluated using the same cross-validation strategy on the balanced 40k dataset. The goal was to assess how different learning algorithms perform in predicting depression outcomes using sociologically-informed variables.
+
+## Parameters Tuning
+
+
+## Preprocessing Pipelines (Recipes)
+
+To systematically evaluate how different sets of predictors influence model performance, I developed four core preprocessing pipelines (Model Types 1–4), each representing a different level of variable complexity. All recipes were built using the `recipes` package in R, and each had two versions: one for **tree-based models** and one for **non-tree (parametric) models**.
+
+In addition to these four structured pipelines, I also created a separate **Kitchen Sink** recipe that included all available predictors, serving as a maximal model for benchmarking purposes.
+
+### Model Recipes
+
+- **Model Type 1 (M1): Group-Only Model**  
+  Included only the categorical variable for identity group membership (LGBTQ+ migrant, LGBTQ+ non-migrant, straight migrant, straight non-migrant).
+
+- **Model Type 2 (M2): + Demographics**  
+  Added basic demographic variables such as age, gender identity, race/ethnicity, and geographic region.
+
+- **Model Type 3 (M3): + Socioeconomic Status (SES)**  
+  Built on M2 by including socioeconomic variables such as education level, insurance coverage, marital status, and parental status.
+
+- **Model Type 4 (M4): + Healthcare Access and Behavior**  
+  Included variables related to healthcare usage and access (e.g., number of doctor visits, therapy history, housing status, physical health rating).
+
+- **Kitchen Sink**  
+  A separate recipe that included all available predictors in the dataset, spanning identity, demographic, socioeconomic, behavioral, and healthcare-related variables.
+
+### Tree-Based vs. Non-Tree-Based Recipes
+
+Each model type was implemented using **two parallel recipes** depending on the algorithm class:
+
+- **Non-Tree-Based Models** (e.g., Logistic Regression, Naive Bayes, KNN):
+  - Dummy encoding for categorical variables
+  - Normalization of numeric predictors
+  - Mode imputation for categorical variables; median imputation for numeric
+  - Removal of near-zero variance predictors
+
+- **Tree-Based Models** (e.g., Decision Tree, RuleFit):
+  - One-hot encoding for categorical variables
+  - Skipped normalization (not needed for decision-based splits)
+  - Same imputation and near-zero variance removal steps as above
+
+This setup ensured that models were trained on appropriately preprocessed data based on their algorithmic assumptions, while keeping predictor sets consistent across model types.
+
+All recipes were prepped and baked using `prep()` and `bake()` from the `recipes` package, then saved for reproducibility and downstream modeling tasks.
+
+
+# Results
