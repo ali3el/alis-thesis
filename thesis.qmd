@@ -237,5 +237,308 @@ This setup ensured that models were trained on appropriately preprocessed data b
 
 All recipes were prepped and baked using `prep()` and `bake()` from the `recipes` package, then saved for reproducibility and downstream modeling tasks.
 
+## Resampling Technique
+
+To evaluate the generalizability of all models and reduce the risk of overfitting, I used **V-fold cross-validation with repeated resampling**. This method involves partitioning the dataset into *V* equal-sized folds, training the model on *V–1* folds, and validating it on the remaining fold. The process is repeated so that each fold serves as a validation set multiple times, and the results are averaged to estimate model performance.
+
+Two resampling configurations were used:
+
+- **Local experiments (exploratory phase):**  
+  Used **4-fold cross-validation with 3 repeats**, resulting in **12 total resamples per model**. This setup allowed for quick prototyping across different recipes and models on a local machine.
+
+- **Final modeling (Quest high-performance cluster):**  
+  Used **10-fold cross-validation with 5 repeats**, resulting in **50 resamples per model**. This more rigorous configuration provided stable and generalizable performance estimates for final evaluation.
+
+In both cases, **stratified resampling** was used based on the binary target variable (`depression_ever`) to ensure consistent class proportions across all folds.
+
+This two-tiered strategy balanced efficiency and rigor: fast iteration locally, followed by deeper evaluation at scale.
+
+
+## Performance Metrics
+
+The primary performance metric for model comparison was the **F1 Score**, which balances precision and recall. This metric was selected due to the class imbalance in the target variable and the importance of not over-prioritizing one class over the other.
+
+Secondary metrics included:
+
+- **Accuracy**: the proportion of correctly classified observations  
+- **Area Under the ROC Curve (AUC)**: measures the ability of the model to distinguish between the two classes across all thresholds  
+- **Precision and Recall**: reported individually to further interpret F1 dynamics  
+
+All metrics were calculated using the `yardstick` package and averaged across all resampling iterations to ensure stable and unbiased comparisons across model types.
+
+
 
 # Results
+
+## Overview
+
+Model performance was evaluated across five classification algorithms—Decision Tree, RuleFit, K-Nearest Neighbors (KNN), Logistic Regression, and Naive Bayes—using repeated stratified cross-validation on a balanced dataset of 40,000 observations. Each model was tested using a distinct recipe (M1–M4 or Kitchen Sink), resulting in a total of ten model-recipe combinations.
+
+To support both experimentation and scalability, models were run on two platforms:
+- A **local pipeline** using 4-fold cross-validation with 3 repeats (12 resamples total)
+- A **Quest high-performance pipeline** using 10-fold cross-validation with 5 repeats (50 resamples total)
+
+Each model-recipe pair was run on **only one platform**, not both—meaning platform and model-recipe configuration are tied together in the evaluation. The primary evaluation metric was **F1 score**, with **accuracy**, **ROC AUC**, **precision**, and **recall** used as complementary metrics.
+
+---
+
+## Model and Recipe Comparison
+
+The best-performing configuration was a **Decision Tree trained on the Kitchen Sink recipe**, evaluated on **Quest**. This model achieved:
+
+- **F1 Score:** ≈ 0.901  
+- **Accuracy:** ≈ 0.90  
+- **ROC AUC:** ≈ 0.95  
+- **Precision:** 0.91  
+- **Recall:** 0.93  
+
+Other high-performing configurations included:
+
+- **KNN + M4** (Local): strong overall balance with `F1 ≈ 0.82`  
+- **KNN + M3** (Quest): `F1 ≈ 0.80`  
+- **RuleFit + Kitchen Sink** (Quest): `F1 ≈ 0.89`, slightly below Decision Tree
+
+In contrast, models trained on **M1 (Group Membership Only)** showed significantly lower F1 scores, especially on Local runs, suggesting that identity group alone is not sufficient for accurate prediction.
+
+
+```{r}
+#| label: fig-f1
+#| fig-cap: "F1 Scores by Model and Recipe (Grouped by Platform)"
+#| echo: false
+load(here("visualizations/plots/combined_model_comparison_plots.rda"))
+f1_plot
+```
+
+## Accuracy and ROC AUC Trends
+
+While F1 score served as the primary evaluation metric, examining **accuracy** and **ROC AUC** provides a more complete picture of model performance.
+
+As shown in **Figure 4**, accuracy results closely aligned with F1 rankings. The **Decision Tree + Kitchen Sink** model (Quest) not only achieved the highest F1 score, but also led in accuracy at approximately **90%**, reinforcing its strong predictive capacity across multiple metrics. Similarly, **KNN models paired with M3 and M4** performed well on both platforms.
+
+In contrast, models trained on **M1 (Group Only)** underperformed in terms of accuracy, particularly with Naive Bayes and RuleFit, echoing their low F1 results.
+
+ROC AUC trends, shown in **Figure 5**, further contextualize these findings. While most high-F1 models also had high AUC scores (above 0.85), some models—such as **KNN + M2 (Quest)**—achieved strong AUC values despite more modest F1 scores. This indicates good class separation overall, but potentially uneven performance on one class (e.g., lower precision or recall).
+
+Naive Bayes models exhibited the weakest AUC scores overall, hovering near or below 0.70 in most recipes—confirming their limited predictive value in this project.
+
+```{r}
+#| label: fig-acc
+#| fig-cap: "Accuracy by Model and Recipe (Grouped by Platform)"
+#| echo: false
+accuracy_plot
+```
+
+```{r}
+#| label: fig-roc
+#| fig-cap: "ROC AUC by Model and Recipe (Grouped by Platform)"
+#| echo: false
+roc_plot
+```
+
+## Summary of Best-Performing Models
+
+The tables below present the **top five performing model–recipe combinations for each platform**, ranked by F1 score. These configurations represent the strongest overall performance on the local and Quest pipelines, respectively.
+
+
+```{r}
+#| label: tbl-local
+#| tbl-cap: "Accuracy by Model and Recipe (Grouped by Platform)"
+#| echo: false
+load(here("master_comparison/local_model_results.rda"))
+local_best_models |> knitr::kable()
+
+```
+
+```{r}
+#| label: tbl-quest
+#| tbl-cap: "Accuracy by Model and Recipe (Grouped by Platform)"
+#| echo: false
+load(here("master_comparison/quest_model_results.rda"))
+quest_best_models |> knitr::kable()
+
+```
+
+Looking at the results in @tbl-local and @tbl-quest, a few patterns stand out.
+
+The Decision Tree trained on the Kitchen Sink recipe came out on top overall. It had the highest F1, accuracy, and AUC on Quest, and also ranked near the top on Local. It makes sense—Decision Trees can handle mixed data types and capture interactions really well, especially when given access to all variables.
+
+KNN models also held up surprisingly well, especially in combination with M3 and M4 recipes. These recipes brought in more context—like education, insurance coverage, and ability to afford care—which clearly helped with performance. KNN doesn’t do anything fancy, but it picked up enough signal to compete with more complex models.
+
+In contrast, models trained only on M1 (group membership) performed poorly across both platforms. This isn't too surprising. LGBTQ+ or migrant identity alone doesn't capture the whole picture—there are deeper structural and socioeconomic drivers of depression that aren't accounted for in that recipe.
+
+RuleFit also underperformed in both environments. While it offers interpretability, it might have been too rigid to adapt to the variable complexity or limited by the group-only input.
+
+Finally, it's worth noting that the overall rankings stayed consistent between Quest and Local, even though the number of resamples was different. That consistency gives more confidence that the results aren’t just random noise or overfitting to a specific setup. We can see how more context and data leads to better model prediction results.
+
+## Model Explainability
+
+To interpret the inner workings of the top-performing models, I used four complementary explanation methods as outlined in Chapter 18 of [*Tidy Modeling with R*](https://www.tmwr.org/explain): variable importance (VIP), SHAP values, partial dependence plots (PDPs), and local explanation plots. These were applied to two decision tree models trained on the Quest platform:
+
+- **Model 1:** Decision Tree trained on the Kitchen Sink recipe
+- **Model 2:** Decision Tree trained on the M3 recipe
+
+These two models were chosen for their strong predictive performance (`F1 ≈ 0.90` and `F1 ≈ 0.79`, respectively) and for capturing two different perspectives: one with the full feature set, and one with a constrained but sociologically rich set of predictors. Together, they offer insight into both what the models learned and how predictions were shaped by variables tied to mental health, identity, and structure.
+
+### Variable Importance (VIP)
+
+Variable importance plots were generated for both selected models using Gini-based importance scores. These plots reveal which features had the strongest overall influence on model predictions.
+
+In the **Kitchen Sink model** (@fig-vip-ks), the most influential predictors were:
+
+- **Anxiety diagnosis** (yes/no)  
+- **Frequency of depressive episodes**  
+- **Use of mental health therapy**  
+- **Reported depression levels**  
+- **Age and LGBTQ+ migrant group membership**  
+
+These results are expected, since this model includes a wide range of behavioral health and access-to-care variables that are strongly correlated with depression. Variables like anxiety history, depression frequency, and therapy access are directly tied to the outcome and thus dominate the decision paths of the tree.
+
+In contrast, the **M3 model** (@fig-vip-m3), which excluded healthcare access variables—showed a different set of top predictors:
+
+- **Group membership**, especially LGBTQ+ migrant identity  
+- **Gender identity and sex**  
+- **Age**  
+- **Race and ethnicity**  
+- **Region and education level**  
+
+This model had to rely more heavily on structural and identity-based variables, since it didn’t have direct indicators of healthcare or clinical behavior. As a result, group membership played a much larger role in shaping predictions, along with broader social positioning factors like race, gender, and education.
+
+Together, these importance plots illustrate how the presence or absence of healthcare access variables changes what the model "pays attention to"—underscoring how variable selection directly affects not just model performance, but the kinds of inferences a model makes.
+
+
+```{r}
+#| label: fig-vip-ks
+#| fig-cap: "Variable importance plot for Decision Tree + Kitchen Sink model"
+#| echo: false
+load(here("model_explainability/results/vip_dtree_quest_ks.rda"))
+vip_plot_ks
+```
+
+```{r}
+#| label: fig-vip-m3
+#| fig-cap: "Variable importance plot for Decision Tree + M3 model"
+#| echo: false
+load(here("model_explainability/results/vip_dtree_quest_m3.rda"))
+vip_plot_m3
+```
+
+### SHAP Values
+
+To further interpret how specific features influenced individual predictions, SHAP (SHapley Additive exPlanations) values were computed for both selected models. These plots decompose predictions into additive contributions from each feature for a representative observation.
+
+In the **Kitchen Sink model** (@fig-shap-ks), the top SHAP contributors included:
+
+- **Depression frequency and level**
+- **Anxiety diagnosis (No)**
+- **Sexual orientation and migrant status**
+- **Lack of mental health therapy**
+
+Here, a combination of behavioral and identity-based factors pushed the prediction toward higher risk. The absence of anxiety history and therapy access had strong negative SHAP contributions, suggesting these were expected in individuals not showing depressive symptoms—so their absence raised red flags.
+
+In the **M3 model** (@fig-shap-m3), where behavioral health data was excluded, different patterns emerged. Major contributors included:
+
+- **Marital status**  
+- **LGBTQ+ migrant identity**  
+- **Education level**  
+- **Age and region**  
+
+These findings reinforce what the variable importance plots suggested: when clinical indicators are missing, models rely more heavily on structural and demographic cues to make predictions. For example, being married and from certain regions contributed negatively to predicted depression risk, while group membership and lower education drove risk up.
+
+SHAP adds nuance to feature importance by explaining not just which variables matter, but how they matter in a specific prediction context.
+
+```{r}
+#| label: fig-shap-ks
+#| fig-cap: "SHAP explanation for a prediction from the Kitchen Sink model"
+#| echo: false
+load(here("model_explainability/results/shap_explanation_ks_tree.rda"))
+shap_plot_ks
+```
+
+```{r}
+#| label: fig-shap-m3
+#| fig-cap: "SHAP explanation for a prediction from the M3 model"
+#| echo: false
+load(here("model_explainability/results/shap_explanation_m3_tree.rda"))
+shap_plot_m3
+```
+
+### Partial Dependence Plots (PDPs)
+
+Partial dependence plots were used to explore how individual features influence the model’s predicted depression risk, averaged across all observations.
+
+In the **Kitchen Sink model** (@fig-pdp-ks), anxiety diagnosis stood out clearly:
+
+- Respondents who had **ever been diagnosed with anxiety** were associated with a **substantially higher** predicted risk of depression.
+- This aligns with known clinical relationships between anxiety and depression.
+
+Education level also showed subtle trends:
+
+- Depression risk was **slightly higher** for individuals with a GED or partial high school completion.
+- The model predicted **lower risk** among those with more advanced degrees (e.g., Master’s, Doctoral), though the differences were not dramatic.
+
+In the **M3 model** (@fig-pdp-m3), the absence of clinical variables shifted the pattern:
+
+- **Anxiety diagnosis** did not show as strong a separation—reflecting its lower role in the M3 recipe.
+- For education, predictions varied less dramatically across categories, but the general trend of lower risk with higher education remained.
+
+These PDPs reinforce earlier findings: **behavioral health variables** like anxiety diagnosis dramatically enhance predictive clarity. When those variables are missing (as in M3), structural features like education fill in—but with less separation between groups.
+
+```{r}
+#| label: fig-pdp-ks
+#| fig-cap: "Partial Dependence – Kitchen Sink Model (Quest – Decision Tree)"
+#| fig-width: 8
+#| fig-height: 9
+#| echo: false
+load(here("model_explainability/results/pdp_combined_cleaned_ks.rda"))
+combined_pdp_plot_ks
+```
+
+```{r}
+#| label: fig-pdp-m3
+#| fig-cap: "Partial Dependence – M3 Model (Quest – Decision Tree)"
+#| fig-width: 8
+#| fig-height: 9
+#| echo: false
+load(here("model_explainability/results/pdp_combined_cleaned_m3.rda"))
+combined_pdp_plot_m3
+
+```
+
+### Local Explanations
+
+To better understand how individual predictions were made, we used local explanation plots from the `fastshap` package. These visualizations break down the predicted probability for a single observation, showing how each feature contributed to pushing the prediction above or below the model’s base rate (intercept of 0.5). We applied this to both selected decision tree models: **Kitchen Sink** and **M3**, both evaluated on Quest.
+
+#### Kitchen Sink Model
+
+```{r}
+#| label: fig-local-ks
+#| fig-cap: "Local explanation for a single observation (Kitchen Sink model – Decision Tree)"
+#| echo: false
+load(here("model_explainability/results/local_explanation_ks.rda"))
+local_plot_ks
+```
+
+In the **Kitchen Sink** model (@fig-local-ks), the prediction for the selected individual reached a high probability of **0.982**, well above the baseline of 0.5. Key positive contributors included:
+
+- **Anxiety diagnosis** and **depression frequency**: These were by far the most influential variables, together accounting for almost all of the lift in predicted depression risk.
+- Identity-based variables such as **sexual orientation (Gay/Lesbian)** and **LGBTQ+ migrant group membership** added small but noticeable effects.
+
+Negative or neutral contributors included **age**, **region**, and **household tenure**. However, their magnitudes were minimal compared to the dominant behavioral health factors. This confirms that in models where access and mental health variables are available, they overwhelmingly drive predictions.
+
+
+```{r}
+#| label: fig-local-m3
+#| fig-cap: "Local explanation for a single observation (Kitchen Sink model – Decision Tree)"
+#| echo: false
+load(here("model_explainability/results/local_explanation_m3.rda"))
+local_plot_m3
+```
+
+In contrast, the **M3** model (@fig-local-m3) predicted a depression probability of **0.76** for a different individual, relying on a more structural set of features. The largest contributors included:
+
+- **Education level (Some college)**, which had a strong positive impact, raising the predicted risk.
+- **Marital status (Divorced)** and **race (Other)** also contributed toward a higher predicted probability.
+
+On the other hand, **being male** and **residing in a large metro area** slightly reduced risk.
+
+This breakdown shows how the model compensates for the lack of behavioral health data. Without information on anxiety or therapy, the tree shifts weight toward **demographic and social context** still producing a relatively high-risk prediction, but from a very different rationale.
