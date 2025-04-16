@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Ali Slayie">
-<meta name="dcterms.date" content="2025-04-15">
+<meta name="dcterms.date" content="2025-04-16">
 
 <title>Predicting Depression from Sociological Variables using Machine Learning</title>
 <style>
@@ -3090,6 +3090,7 @@ vertical-align: -.125em;
   <li><a href="#partial-dependence-plots-pdps" id="toc-partial-dependence-plots-pdps" class="nav-link" data-scroll-target="#partial-dependence-plots-pdps">Partial Dependence Plots (PDPs)</a></li>
   <li><a href="#local-explanations" id="toc-local-explanations" class="nav-link" data-scroll-target="#local-explanations">Local Explanations</a></li>
   </ul></li>
+  <li><a href="#discussion" id="toc-discussion" class="nav-link" data-scroll-target="#discussion">Discussion</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -3116,7 +3117,7 @@ vertical-align: -.125em;
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">April 15, 2025</p>
+      <p class="date">April 16, 2025</p>
     </div>
   </div>
   
@@ -3905,6 +3906,16 @@ Figure 13: Local explanation for a single observation (Kitchen Sink model – D
 <p>This breakdown shows how the model compensates for the lack of behavioral health data. Without information on anxiety or therapy, the tree shifts weight toward <strong>demographic and social context</strong> still producing a relatively high-risk prediction, but from a very different rationale.</p>
 </section>
 </section>
+</section>
+<section id="discussion" class="level2">
+<h2 class="anchored" data-anchor-id="discussion">Discussion</h2>
+<p>This study explored the use of interpretable machine learning models to predict depression among individuals with intersecting marginalized identities, specifically LGBTQ+ and migrant populations, using sociological and health variables from the National Health Interview Survey (NHIS). I focused in depth on decision trees due to their intuitive structure and ability to produce clear, visual explanations. Among the multiple models trained and evaluated, those built on Quest using the Kitchen Sink and M3 feature sets demonstrated the strongest performance. The Kitchen Sink model achieved an F-measure of <strong>0.836</strong> and an area under the ROC curve (AUC) of <strong>0.878</strong>, while the M3 model followed closely with an F-measure of <strong>0.812</strong> and an AUC of <strong>0.861.</strong></p>
+<p>To interpret these metrics: the <strong>F-measure</strong> (or F1 score) balances two critical components of model quality, precision (how many of the predicted depressed cases were actually correct) and recall (how many of the actual depressed individuals the model was able to detect). A perfect score is 1.0; a value above 0.8 indicates strong, reliable performance with limited false positives and negatives. Meanwhile, the <strong>AUC</strong> represents the model’s ability to rank individuals correctly in terms of risk: an AUC of 0.878 means that nearly 88% of the time, the model assigns a higher probability of depression to someone who actually experiences it than to someone who does not, a high level of overall discrimination.</p>
+<p>Both top models highlighted anxiety diagnosis and self-reported depression frequency as key predictors. In the Kitchen Sink model, SHAP values showed that these two variables contributed the majority of the increase from the base prediction probability of 0.5 to a final predicted probability of <strong>0.982</strong> for a representative high-risk individual. While this aligns with known associations between anxiety and depression, it also flags a methodological concern: “depression frequency” may be too close in meaning to the outcome variable (“ever had depression”), risking circularity. Future work should consider removing or redefining this feature to ensure conceptual and temporal separation between predictors and outcomes.</p>
+<p>Differences in model performance across feature sets also carried important sociological implications. Simpler models like M1, which included only LGBTQ+ and migration status, performed notably worse (F-measure <strong>0.674</strong>), while M3, which added demographic and socioeconomic context, demonstrated a significant jump in predictive power (F-measure <strong>0.812</strong>). This supports long-standing sociological theories that emphasize the importance of structural inequality in shaping health outcomes. Identity alone is insufficient for understanding depression risk without incorporating the broader material and geographic conditions individuals navigate.</p>
+<p>I also ensured that I stratified and balance the dataset across four subgroups, LGBTQ+ migrants, LGBTQ+ non-migrants, straight migrants, and straight non-migrants, to avoid skewed performance. In doing so, I observed that the top models generalized relatively well across these groups, with subgroup F-measures ranging from <strong>0.811</strong> to <strong>0.849</strong> for the Kitchen Sink model. This is promising, given that data-driven systems often underperform for marginalized populations due to underrepresentation.</p>
+<p>Interpretability techniques deepened our understanding of model behavior. SHAP plots illuminated global feature influence, partial dependence plots revealed non-linear relationships (e.g., between age and risk), and local explanation plots made it possible to “zoom in” on individual predictions. These tools transformed the model from a black box into an interpretable object, a particularly valuable property in sociological and public health contexts, where trust and transparency are key.</p>
+<p>While decision trees were selected due to their compatibility with interpretability tools, future work should explore the predictive potential of ensemble models like Random Forests or Boosted Trees. Although these are harder to interpret, they may yield improved raw performance. Running them as a benchmark would help clarify whether we traded off any significant predictive accuracy for the sake of explainability, and whether that tradeoff is justified in this context.</p>
 </section>
 </section>
 
