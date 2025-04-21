@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Ali Slayie">
-<meta name="dcterms.date" content="2025-04-20">
+<meta name="dcterms.date" content="2025-04-21">
 
 <title>Predicting Depression from Sociological Variables using Machine Learning</title>
 <style>
@@ -3074,7 +3074,7 @@ vertical-align: -.125em;
   <li><a href="#data-splitting-resampling-strategy" id="toc-data-splitting-resampling-strategy" class="nav-link" data-scroll-target="#data-splitting-resampling-strategy">Data Splitting &amp; Resampling Strategy</a></li>
   <li><a href="#model-types" id="toc-model-types" class="nav-link" data-scroll-target="#model-types">Model Types</a></li>
   <li><a href="#parameters-tuning" id="toc-parameters-tuning" class="nav-link" data-scroll-target="#parameters-tuning">Parameters Tuning</a></li>
-  <li><a href="#preprocessing-pipelines-recipes" id="toc-preprocessing-pipelines-recipes" class="nav-link" data-scroll-target="#preprocessing-pipelines-recipes">Preprocessing Pipelines (Recipes)</a>
+  <li><a href="#preprocessing-pipelines---feature-engineering" id="toc-preprocessing-pipelines---feature-engineering" class="nav-link" data-scroll-target="#preprocessing-pipelines---feature-engineering">Preprocessing Pipelines - Feature Engineering</a>
   <ul class="collapse">
   <li><a href="#model-recipes" id="toc-model-recipes" class="nav-link" data-scroll-target="#model-recipes">Model Recipes</a></li>
   <li><a href="#tree-based-vs.-non-tree-based-recipes" id="toc-tree-based-vs.-non-tree-based-recipes" class="nav-link" data-scroll-target="#tree-based-vs.-non-tree-based-recipes">Tree-Based vs. Non-Tree-Based Recipes</a></li>
@@ -3084,18 +3084,27 @@ vertical-align: -.125em;
   </ul></li>
   <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results">Results</a>
   <ul class="collapse">
-  <li><a href="#overview" id="toc-overview" class="nav-link" data-scroll-target="#overview">Overview</a></li>
+  <li><a href="#modeling-overview" id="toc-modeling-overview" class="nav-link" data-scroll-target="#modeling-overview">Modeling Overview</a></li>
   <li><a href="#model-and-recipe-comparison" id="toc-model-and-recipe-comparison" class="nav-link" data-scroll-target="#model-and-recipe-comparison">Model and Recipe Comparison</a></li>
   <li><a href="#accuracy-and-roc-auc-trends" id="toc-accuracy-and-roc-auc-trends" class="nav-link" data-scroll-target="#accuracy-and-roc-auc-trends">Accuracy and ROC AUC Trends</a></li>
   <li><a href="#summary-of-best-performing-models" id="toc-summary-of-best-performing-models" class="nav-link" data-scroll-target="#summary-of-best-performing-models">Summary of Best-Performing Models</a></li>
+  </ul></li>
   <li><a href="#model-explainability" id="toc-model-explainability" class="nav-link" data-scroll-target="#model-explainability">Model Explainability</a>
   <ul class="collapse">
   <li><a href="#variable-importance-vip" id="toc-variable-importance-vip" class="nav-link" data-scroll-target="#variable-importance-vip">Variable Importance (VIP)</a></li>
   <li><a href="#shap-values" id="toc-shap-values" class="nav-link" data-scroll-target="#shap-values">SHAP Values</a></li>
   <li><a href="#partial-dependence-plots-pdps" id="toc-partial-dependence-plots-pdps" class="nav-link" data-scroll-target="#partial-dependence-plots-pdps">Partial Dependence Plots (PDPs)</a></li>
-  <li><a href="#local-explanations" id="toc-local-explanations" class="nav-link" data-scroll-target="#local-explanations">Local Explanations</a></li>
+  <li><a href="#local-explanations" id="toc-local-explanations" class="nav-link" data-scroll-target="#local-explanations">Local Explanations</a>
+  <ul class="collapse">
+  <li><a href="#kitchen-sink-model" id="toc-kitchen-sink-model" class="nav-link" data-scroll-target="#kitchen-sink-model">Kitchen Sink Model</a></li>
+  <li><a href="#m3-model" id="toc-m3-model" class="nav-link" data-scroll-target="#m3-model">M3 Model</a></li>
+  </ul></li>
   </ul></li>
   <li><a href="#discussion" id="toc-discussion" class="nav-link" data-scroll-target="#discussion">Discussion</a></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
+  <li><a href="#appendix" id="toc-appendix" class="nav-link" data-scroll-target="#appendix">Appendix</a>
+  <ul class="collapse">
+  <li><a href="#reproducibility-data-access" id="toc-reproducibility-data-access" class="nav-link" data-scroll-target="#reproducibility-data-access">Reproducibility &amp; Data Access</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -3122,7 +3131,7 @@ vertical-align: -.125em;
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">April 20, 2025</p>
+      <p class="date">April 21, 2025</p>
     </div>
   </div>
   
@@ -3321,8 +3330,8 @@ A hybrid model that extracts rules from tree ensembles and combines them with li
 <section id="parameters-tuning" class="level2">
 <h2 class="anchored" data-anchor-id="parameters-tuning">Parameters Tuning</h2>
 </section>
-<section id="preprocessing-pipelines-recipes" class="level2">
-<h2 class="anchored" data-anchor-id="preprocessing-pipelines-recipes">Preprocessing Pipelines (Recipes)</h2>
+<section id="preprocessing-pipelines---feature-engineering" class="level2">
+<h2 class="anchored" data-anchor-id="preprocessing-pipelines---feature-engineering">Preprocessing Pipelines - Feature Engineering</h2>
 <p>To systematically evaluate how different sets of predictors influence model performance, I developed four core preprocessing pipelines (Model Types 1–4), each representing a different level of variable complexity. All recipes were built using the <code>recipes</code> package in R, and each had two versions: one for <strong>tree-based models</strong> and one for <strong>non-tree (parametric) models</strong>.</p>
 <p>In addition to these four structured pipelines, I also created a separate <strong>Kitchen Sink</strong> recipe that included all available predictors, serving as a maximal model for benchmarking purposes.</p>
 <section id="model-recipes" class="level3">
@@ -3391,8 +3400,8 @@ Used <strong>10-fold cross-validation with 5 repeats</strong>, resulting in <str
 </section>
 <section id="results" class="level1">
 <h1>Results</h1>
-<section id="overview" class="level2">
-<h2 class="anchored" data-anchor-id="overview">Overview</h2>
+<section id="modeling-overview" class="level2">
+<h2 class="anchored" data-anchor-id="modeling-overview">Modeling Overview</h2>
 <p>Model performance was evaluated across five classification algorithms—Decision Tree, RuleFit, K-Nearest Neighbors (KNN), Logistic Regression, and Naive Bayes—using repeated stratified cross-validation on a balanced dataset of 40,000 observations. Each model was tested using a distinct recipe (M1–M4 or Kitchen Sink), resulting in a total of ten model-recipe combinations.</p>
 <p>To support both experimentation and scalability, models were run on two platforms: - A <strong>local pipeline</strong> using 4-fold cross-validation with 3 repeats (12 resamples total) - A <strong>Quest high-performance pipeline</strong> using 10-fold cross-validation with 5 repeats (50 resamples total)</p>
 <p>Each model-recipe pair was run on <strong>only one platform</strong>, not both—meaning platform and model-recipe configuration are tied together in the evaluation. The primary evaluation metric was <strong>F1 score</strong>, with <strong>accuracy</strong>, <strong>ROC AUC</strong>, <strong>precision</strong>, and <strong>recall</strong> used as complementary metrics.</p>
@@ -3485,16 +3494,16 @@ Table 1: Accuracy by Model and Recipe (Grouped by Platform)
 <div class="cell-output-display">
 <table class="do-not-create-environment cell caption-top table table-sm table-striped small">
 <colgroup>
-<col style="width: 12%">
+<col style="width: 14%">
 <col style="width: 9%">
-<col style="width: 9%">
-<col style="width: 9%">
-<col style="width: 9%">
-<col style="width: 9%">
-<col style="width: 13%">
+<col style="width: 10%">
+<col style="width: 7%">
 <col style="width: 7%">
 <col style="width: 8%">
-<col style="width: 11%">
+<col style="width: 15%">
+<col style="width: 8%">
+<col style="width: 9%">
+<col style="width: 13%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -3513,72 +3522,72 @@ Table 1: Accuracy by Model and Recipe (Grouped by Platform)
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">Decision Tree</td>
-<td style="text-align: right;">0.8941875</td>
-<td style="text-align: right;">0.8958103</td>
-<td style="text-align: right;">0.9268750</td>
-<td style="text-align: right;">0.8939917</td>
-<td style="text-align: right;">0.9495037</td>
-<td style="text-align: right;">0.0007040</td>
+<td style="text-align: right;">0.894</td>
+<td style="text-align: right;">0.896</td>
+<td style="text-align: right;">0.927</td>
+<td style="text-align: right;">0.894</td>
+<td style="text-align: right;">0.950</td>
+<td style="text-align: right;">0.001</td>
 <td style="text-align: right;">1</td>
 <td style="text-align: left;">Local</td>
 <td style="text-align: left;">Kitchen Sink</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">KNN</td>
-<td style="text-align: right;">0.7081563</td>
-<td style="text-align: right;">0.6794843</td>
-<td style="text-align: right;">0.8460000</td>
-<td style="text-align: right;">0.7386447</td>
-<td style="text-align: right;">0.8004376</td>
-<td style="text-align: right;">0.0011041</td>
+<td style="text-align: right;">0.708</td>
+<td style="text-align: right;">0.679</td>
+<td style="text-align: right;">0.846</td>
+<td style="text-align: right;">0.739</td>
+<td style="text-align: right;">0.800</td>
+<td style="text-align: right;">0.001</td>
 <td style="text-align: right;">2</td>
 <td style="text-align: left;">Local</td>
 <td style="text-align: left;">M2</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">KNN</td>
-<td style="text-align: right;">0.7869792</td>
-<td style="text-align: right;">0.7972108</td>
-<td style="text-align: right;">0.7722708</td>
-<td style="text-align: right;">0.7836419</td>
-<td style="text-align: right;">0.8428956</td>
-<td style="text-align: right;">0.0015625</td>
+<td style="text-align: right;">0.787</td>
+<td style="text-align: right;">0.797</td>
+<td style="text-align: right;">0.772</td>
+<td style="text-align: right;">0.784</td>
+<td style="text-align: right;">0.843</td>
+<td style="text-align: right;">0.002</td>
 <td style="text-align: right;">3</td>
 <td style="text-align: left;">Local</td>
 <td style="text-align: left;">M3</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">KNN</td>
-<td style="text-align: right;">0.5000000</td>
-<td style="text-align: right;">0.5000000</td>
-<td style="text-align: right;">1.0000000</td>
-<td style="text-align: right;">0.6666667</td>
-<td style="text-align: right;">0.5000000</td>
-<td style="text-align: right;">0.0000000</td>
+<td style="text-align: right;">0.500</td>
+<td style="text-align: right;">0.500</td>
+<td style="text-align: right;">1.000</td>
+<td style="text-align: right;">0.667</td>
+<td style="text-align: right;">0.500</td>
+<td style="text-align: right;">0.000</td>
 <td style="text-align: right;">4</td>
 <td style="text-align: left;">Local</td>
 <td style="text-align: left;">M1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">RuleFit</td>
-<td style="text-align: right;">0.5878125</td>
-<td style="text-align: right;">0.6039324</td>
-<td style="text-align: right;">1.0000000</td>
-<td style="text-align: right;">0.6666667</td>
-<td style="text-align: right;">0.5915679</td>
-<td style="text-align: right;">0.0000000</td>
+<td style="text-align: right;">0.588</td>
+<td style="text-align: right;">0.604</td>
+<td style="text-align: right;">1.000</td>
+<td style="text-align: right;">0.667</td>
+<td style="text-align: right;">0.592</td>
+<td style="text-align: right;">0.000</td>
 <td style="text-align: right;">4</td>
 <td style="text-align: left;">Local</td>
 <td style="text-align: left;">M1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">KNN</td>
-<td style="text-align: right;">0.8221354</td>
-<td style="text-align: right;">0.8279194</td>
-<td style="text-align: right;">0.8137708</td>
-<td style="text-align: right;">0.8205936</td>
-<td style="text-align: right;">0.8835340</td>
-<td style="text-align: right;">0.0010974</td>
+<td style="text-align: right;">0.822</td>
+<td style="text-align: right;">0.828</td>
+<td style="text-align: right;">0.814</td>
+<td style="text-align: right;">0.821</td>
+<td style="text-align: right;">0.884</td>
+<td style="text-align: right;">0.001</td>
 <td style="text-align: right;">5</td>
 <td style="text-align: left;">Local</td>
 <td style="text-align: left;">M4</td>
@@ -3600,16 +3609,16 @@ Table 2: Accuracy by Model and Recipe (Grouped by Platform)
 <div class="cell-output-display">
 <table class="do-not-create-environment cell caption-top table table-sm table-striped small">
 <colgroup>
-<col style="width: 12%">
+<col style="width: 14%">
 <col style="width: 9%">
-<col style="width: 9%">
-<col style="width: 9%">
-<col style="width: 9%">
-<col style="width: 9%">
-<col style="width: 13%">
+<col style="width: 10%">
+<col style="width: 7%">
 <col style="width: 7%">
 <col style="width: 8%">
-<col style="width: 11%">
+<col style="width: 15%">
+<col style="width: 8%">
+<col style="width: 9%">
+<col style="width: 13%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -3628,72 +3637,72 @@ Table 2: Accuracy by Model and Recipe (Grouped by Platform)
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">Decision Tree</td>
-<td style="text-align: right;">0.9018500</td>
-<td style="text-align: right;">0.9064917</td>
-<td style="text-align: right;">0.9268750</td>
-<td style="text-align: right;">0.9012907</td>
-<td style="text-align: right;">0.9522425</td>
-<td style="text-align: right;">0.0008559</td>
+<td style="text-align: right;">0.902</td>
+<td style="text-align: right;">0.906</td>
+<td style="text-align: right;">0.927</td>
+<td style="text-align: right;">0.901</td>
+<td style="text-align: right;">0.952</td>
+<td style="text-align: right;">0.001</td>
 <td style="text-align: right;">1</td>
 <td style="text-align: left;">Quest</td>
 <td style="text-align: left;">Kitchen Sink</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Knn</td>
-<td style="text-align: right;">0.7124688</td>
-<td style="text-align: right;">0.6801889</td>
-<td style="text-align: right;">0.8643500</td>
-<td style="text-align: right;">0.7418626</td>
-<td style="text-align: right;">0.8050537</td>
-<td style="text-align: right;">0.0007117</td>
+<td style="text-align: right;">0.712</td>
+<td style="text-align: right;">0.680</td>
+<td style="text-align: right;">0.864</td>
+<td style="text-align: right;">0.742</td>
+<td style="text-align: right;">0.805</td>
+<td style="text-align: right;">0.001</td>
 <td style="text-align: right;">2</td>
 <td style="text-align: left;">Quest</td>
 <td style="text-align: left;">M2</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Knn</td>
-<td style="text-align: right;">0.7999938</td>
-<td style="text-align: right;">0.8109067</td>
-<td style="text-align: right;">0.7852750</td>
-<td style="text-align: right;">0.7967458</td>
-<td style="text-align: right;">0.8593377</td>
-<td style="text-align: right;">0.0009364</td>
+<td style="text-align: right;">0.800</td>
+<td style="text-align: right;">0.811</td>
+<td style="text-align: right;">0.785</td>
+<td style="text-align: right;">0.797</td>
+<td style="text-align: right;">0.859</td>
+<td style="text-align: right;">0.001</td>
 <td style="text-align: right;">3</td>
 <td style="text-align: left;">Quest</td>
 <td style="text-align: left;">M3</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Knn</td>
-<td style="text-align: right;">0.5000000</td>
-<td style="text-align: right;">0.5000000</td>
-<td style="text-align: right;">1.0000000</td>
-<td style="text-align: right;">0.6666667</td>
-<td style="text-align: right;">0.5000000</td>
-<td style="text-align: right;">0.0000000</td>
+<td style="text-align: right;">0.500</td>
+<td style="text-align: right;">0.500</td>
+<td style="text-align: right;">1.000</td>
+<td style="text-align: right;">0.667</td>
+<td style="text-align: right;">0.500</td>
+<td style="text-align: right;">0.000</td>
 <td style="text-align: right;">4</td>
 <td style="text-align: left;">Quest</td>
 <td style="text-align: left;">M1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Rulefit</td>
-<td style="text-align: right;">0.5878125</td>
-<td style="text-align: right;">0.6039663</td>
-<td style="text-align: right;">1.0000000</td>
-<td style="text-align: right;">0.6666667</td>
-<td style="text-align: right;">0.5914593</td>
-<td style="text-align: right;">0.0000000</td>
+<td style="text-align: right;">0.588</td>
+<td style="text-align: right;">0.604</td>
+<td style="text-align: right;">1.000</td>
+<td style="text-align: right;">0.667</td>
+<td style="text-align: right;">0.591</td>
+<td style="text-align: right;">0.000</td>
 <td style="text-align: right;">4</td>
 <td style="text-align: left;">Quest</td>
 <td style="text-align: left;">M1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Knn</td>
-<td style="text-align: right;">0.8344188</td>
-<td style="text-align: right;">0.8416289</td>
-<td style="text-align: right;">0.8243375</td>
-<td style="text-align: right;">0.8327280</td>
-<td style="text-align: right;">0.8952725</td>
-<td style="text-align: right;">0.0007861</td>
+<td style="text-align: right;">0.834</td>
+<td style="text-align: right;">0.842</td>
+<td style="text-align: right;">0.824</td>
+<td style="text-align: right;">0.833</td>
+<td style="text-align: right;">0.895</td>
+<td style="text-align: right;">0.001</td>
 <td style="text-align: right;">5</td>
 <td style="text-align: left;">Quest</td>
 <td style="text-align: left;">M4</td>
@@ -3712,16 +3721,17 @@ Table 2: Accuracy by Model and Recipe (Grouped by Platform)
 <p>RuleFit also underperformed in both environments. While it offers interpretability, it might have been too rigid to adapt to the variable complexity or limited by the group-only input.</p>
 <p>Finally, it’s worth noting that the overall rankings stayed consistent between Quest and Local, even though the number of resamples was different. That consistency gives more confidence that the results aren’t just random noise or overfitting to a specific setup. We can see how more context and data leads to better model prediction results.</p>
 </section>
-<section id="model-explainability" class="level2">
-<h2 class="anchored" data-anchor-id="model-explainability">Model Explainability</h2>
+</section>
+<section id="model-explainability" class="level1">
+<h1>Model Explainability</h1>
 <p>To interpret the inner workings of the top-performing models, I used four complementary explanation methods as outlined in Chapter 18 of <a href="https://www.tmwr.org/explain"><em>Tidy Modeling with R</em></a>: variable importance (VIP), SHAP values, partial dependence plots (PDPs), and local explanation plots. These were applied to two decision tree models trained on the Quest platform:</p>
 <ul>
 <li><strong>Model 1:</strong> Decision Tree trained on the Kitchen Sink recipe</li>
 <li><strong>Model 2:</strong> Decision Tree trained on the M3 recipe</li>
 </ul>
 <p>These two models were chosen for their strong predictive performance (<code>F1 ≈ 0.90</code> and <code>F1 ≈ 0.79</code>, respectively) and for capturing two different perspectives: one with the full feature set, and one with a constrained but sociologically rich set of predictors. Together, they offer insight into both what the models learned and how predictions were shaped by variables tied to mental health, identity, and structure.</p>
-<section id="variable-importance-vip" class="level3">
-<h3 class="anchored" data-anchor-id="variable-importance-vip">Variable Importance (VIP)</h3>
+<section id="variable-importance-vip" class="level2">
+<h2 class="anchored" data-anchor-id="variable-importance-vip">Variable Importance (VIP)</h2>
 <p>Variable importance plots were generated for both selected models using Gini-based importance scores. These plots reveal which features had the strongest overall influence on model predictions.</p>
 <p>In the <strong>Kitchen Sink model</strong> (<a href="#fig-vip-ks" class="quarto-xref">Figure 6</a>), the most influential predictors were:</p>
 <ul>
@@ -3779,8 +3789,8 @@ Figure 7: Variable importance plot for Decision Tree + M3 model
 </div>
 </div>
 </section>
-<section id="shap-values" class="level3">
-<h3 class="anchored" data-anchor-id="shap-values">SHAP Values</h3>
+<section id="shap-values" class="level2">
+<h2 class="anchored" data-anchor-id="shap-values">SHAP Values</h2>
 <p>To further interpret how specific features influenced individual predictions, SHAP (SHapley Additive exPlanations) values were computed for both selected models. These plots decompose predictions into additive contributions from each feature for a representative observation.</p>
 <p>In the <strong>Kitchen Sink model</strong> (<a href="#fig-shap-ks" class="quarto-xref">Figure 8</a>), the top SHAP contributors included:</p>
 <ul>
@@ -3831,8 +3841,8 @@ Figure 9: SHAP explanation for a prediction from the M3 model
 </div>
 </div>
 </section>
-<section id="partial-dependence-plots-pdps" class="level3">
-<h3 class="anchored" data-anchor-id="partial-dependence-plots-pdps">Partial Dependence Plots (PDPs)</h3>
+<section id="partial-dependence-plots-pdps" class="level2">
+<h2 class="anchored" data-anchor-id="partial-dependence-plots-pdps">Partial Dependence Plots (PDPs)</h2>
 <p>Partial dependence plots were used to explore how individual features influence the model’s predicted depression risk, averaged across all observations.</p>
 <p>In the <strong>Kitchen Sink model</strong> (<a href="#fig-pdp-ks" class="quarto-xref">Figure 10</a>), anxiety diagnosis stood out clearly:</p>
 <ul>
@@ -3879,11 +3889,11 @@ Figure 11: Partial Dependence – M3 Model (Quest – Decision Tree)
 </div>
 </div>
 </section>
-<section id="local-explanations" class="level3">
-<h3 class="anchored" data-anchor-id="local-explanations">Local Explanations</h3>
+<section id="local-explanations" class="level2">
+<h2 class="anchored" data-anchor-id="local-explanations">Local Explanations</h2>
 <p>To better understand how individual predictions were made, we used local explanation plots from the <code>fastshap</code> package. These visualizations break down the predicted probability for a single observation, showing how each feature contributed to pushing the prediction above or below the model’s base rate (intercept of 0.5). We applied this to both selected decision tree models: <strong>Kitchen Sink</strong> and <strong>M3</strong>, both evaluated on Quest.</p>
-<section id="kitchen-sink-model" class="level4">
-<h4 class="anchored" data-anchor-id="kitchen-sink-model">Kitchen Sink Model</h4>
+<section id="kitchen-sink-model" class="level3">
+<h3 class="anchored" data-anchor-id="kitchen-sink-model">Kitchen Sink Model</h3>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-local-ks" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -3904,6 +3914,9 @@ Figure 12: Local explanation for a single observation (Kitchen Sink model – D
 <li>Identity-based variables such as <strong>sexual orientation (Gay/Lesbian)</strong> and <strong>LGBTQ+ migrant group membership</strong> added small but noticeable effects.</li>
 </ul>
 <p>Negative or neutral contributors included <strong>age</strong>, <strong>region</strong>, and <strong>household tenure</strong>. However, their magnitudes were minimal compared to the dominant behavioral health factors. This confirms that in models where access and mental health variables are available, they overwhelmingly drive predictions.</p>
+</section>
+<section id="m3-model" class="level3">
+<h3 class="anchored" data-anchor-id="m3-model">M3 Model</h3>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-local-m3" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -3928,8 +3941,8 @@ Figure 13: Local explanation for a single observation (Kitchen Sink model – D
 </section>
 </section>
 </section>
-<section id="discussion" class="level2">
-<h2 class="anchored" data-anchor-id="discussion">Discussion</h2>
+<section id="discussion" class="level1">
+<h1>Discussion</h1>
 <p>This study explored the use of interpretable machine learning models to predict depression among individuals with intersecting marginalized identities — specifically LGBTQ+ and migrant populations — using sociological and health variables from the National Health Interview Survey (NHIS). This thesis focused in depth on decision trees due to their intuitive structure and ability to produce clear, visual explanations. Among the multiple models trained and evaluated, those built on Quest using the Kitchen Sink and M3 feature sets demonstrated the strongest performance. The Kitchen Sink model achieved an F-measure of <strong>0.836</strong> and an area under the ROC curve (AUC) of <strong>0.878</strong>, while the M3 model followed closely with an F-measure of <strong>0.812</strong> and an AUC of <strong>0.861</strong>.</p>
 <p>These models were trained and evaluated using Northwestern’s high-performance computing cluster (Quest), which enabled more extensive cross-validation (15-fold with 5 repeats) and larger training sets than could be processed locally. In preliminary tests, models trained on Quest consistently outperformed those run on a personal laptop, demonstrating the importance of computational resources when working with large-scale health survey data and intensive model evaluation workflows.</p>
 <p>To interpret these metrics: the <strong>F-measure</strong> (or F1 score) balances two critical components of model quality — <em>precision</em> (how many of the predicted depressed cases were actually correct) and <em>recall</em> (how many of the actual depressed individuals the model was able to detect). A perfect score is 1.0; a value above 0.8 indicates strong, reliable performance with limited false positives and negatives. Meanwhile, the <strong>AUC</strong> represents the model’s ability to rank individuals correctly in terms of risk: an AUC of 0.878 means that nearly 88% of the time, the model assigns a higher probability of depression to someone who actually experiences it than to someone who does not, indicating a high level of discriminative ability.</p>
@@ -3940,6 +3953,23 @@ Figure 13: Local explanation for a single observation (Kitchen Sink model – D
 <p>These interpretability tools each offer a different lens on the model’s behavior. <strong>SHAP values</strong> provide a consistent way to assess how much each feature contributes to individual predictions, accounting for feature interactions. <strong>Partial dependence plots</strong> show how changes in a single variable affect the model’s output while holding other variables constant, revealing non-linear effects like higher depression risk at lower income levels. <strong>Local explanation plots</strong>, such as those generated using the <code>fastshap</code> package, break down the predicted probability for a specific observation and highlight which features pushed the prediction higher or lower. Together, these methods help translate abstract model behavior into tangible insights, making them especially useful in public health and sociological research.</p>
 <p>While decision trees were selected due to their compatibility with interpretability tools, future work should explore the predictive potential of ensemble models like Random Forests or Boosted Trees. Although these are harder to interpret, they may yield improved raw performance. Running them as a benchmark would help clarify whether any significant predictive accuracy was traded off for the sake of explainability — and whether that tradeoff is justified in this context.</p>
 <p>This work demonstrates the value of interpretable machine learning as a bridge between computational rigor and sociological inquiry, enabling both predictive insight and critical reflection on structural health disparities.</p>
+</section>
+<section id="conclusion" class="level1">
+<h1>Conclusion</h1>
+<p>This thesis set out to predict depression using interpretable machine learning models, with a particular focus on individuals whose identities often place them at the intersection of structural disadvantage, namely LGBTQ+ and migrant populations. Drawing on five years of National Health Interview Survey (NHIS) data, the project combined sociological insight with algorithmic modeling to assess how demographic, medical, and social factors contribute to depression risk.</p>
+<p>Decision trees were chosen for their clarity and compatibility with explainability tools, enabling both strong predictive performance and transparent interpretation. Models trained using the Kitchen Sink and M3 feature sets achieved high F-measure and AUC scores, while SHAP values and local explanation plots made it possible to trace individual-level predictions. Stratifying the dataset across four subgroups ensured fairness across intersectional identities, with only minor variation in performance.</p>
+<p>The findings highlight not only the predictive value of clinical and demographic variables like anxiety diagnosis, income, and regional context, but also the importance of incorporating marginalized identities into model design. While some predictors, such as self-reported depression frequency, raised questions about conceptual overlap, the overall framework demonstrated that it is possible to build both accurate and socially aware models of mental health risk.</p>
+<p>This project contributes to the growing body of work at the intersection of data science and social science by emphasizing transparency, subgroup fairness, and the integration of theory into applied modeling. Future work might explore additional model types, such as random forests or boosted trees, or extend this approach to other health outcomes and survey datasets. More broadly, this work serves as a case study in using machine learning not only to predict, but to reflect, helping surface the structural patterns that shape mental health across identity lines.</p>
+</section>
+<section id="appendix" class="level1">
+<h1>Appendix</h1>
+<section id="reproducibility-data-access" class="level2">
+<h2 class="anchored" data-anchor-id="reproducibility-data-access">Reproducibility &amp; Data Access</h2>
+<p>All code used in this analysis is available in the accompanying GitHub repository (link below). Due to file size constraints, certain datasets and intermediate files have been uploaded separately to a publicly accessible Google Drive folder:</p>
+<ul>
+<li>Google Drive folder: [Insert link here]</li>
+</ul>
+<p>To fully reproduce the results, users should download the files in that folder and place them in the appropriate directory as noted in the README or code comments. The main script files are structured for execution on both local machines and the Quest high-performance computing cluster.</p>
 </section>
 </section>
 

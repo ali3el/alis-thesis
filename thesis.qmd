@@ -216,7 +216,7 @@ These models were trained and evaluated using the same cross-validation strategy
 ## Parameters Tuning
 
 
-## Preprocessing Pipelines (Recipes)
+## Preprocessing Pipelines - Feature Engineering
 
 To systematically evaluate how different sets of predictors influence model performance, I developed four core preprocessing pipelines (Model Types 1–4), each representing a different level of variable complexity. All recipes were built using the `recipes` package in R, and each had two versions: one for **tree-based models** and one for **non-tree (parametric) models**.
 
@@ -291,7 +291,7 @@ All metrics were calculated using the `yardstick` package and averaged across al
 
 # Results
 
-## Overview
+## Modeling Overview
 
 Model performance was evaluated across five classification algorithms—Decision Tree, RuleFit, K-Nearest Neighbors (KNN), Logistic Regression, and Naive Bayes—using repeated stratified cross-validation on a balanced dataset of 40,000 observations. Each model was tested using a distinct recipe (M1–M4 or Kitchen Sink), resulting in a total of ten model-recipe combinations.
 
@@ -366,7 +366,9 @@ The tables below present the **top five performing model–recipe combinations f
 #| tbl-cap: "Accuracy by Model and Recipe (Grouped by Platform)"
 #| echo: false
 load(here("master_comparison/local_model_results.rda"))
-local_best_models |> knitr::kable()
+local_best_models |>
+  mutate(across(where(is.numeric), ~ round(.x, 3))) |>
+  knitr::kable()
 
 ```
 
@@ -375,7 +377,9 @@ local_best_models |> knitr::kable()
 #| tbl-cap: "Accuracy by Model and Recipe (Grouped by Platform)"
 #| echo: false
 load(here("master_comparison/quest_model_results.rda"))
-quest_best_models |> knitr::kable()
+quest_best_models |>
+  mutate(across(where(is.numeric), ~ round(.x, 3))) |> 
+  knitr::kable()
 
 ```
 
@@ -391,7 +395,7 @@ RuleFit also underperformed in both environments. While it offers interpretabili
 
 Finally, it's worth noting that the overall rankings stayed consistent between Quest and Local, even though the number of resamples was different. That consistency gives more confidence that the results aren’t just random noise or overfitting to a specific setup. We can see how more context and data leads to better model prediction results.
 
-## Model Explainability
+# Model Explainability
 
 To interpret the inner workings of the top-performing models, I used four complementary explanation methods as outlined in Chapter 18 of [*Tidy Modeling with R*](https://www.tmwr.org/explain): variable importance (VIP), SHAP values, partial dependence plots (PDPs), and local explanation plots. These were applied to two decision tree models trained on the Quest platform:
 
@@ -400,7 +404,7 @@ To interpret the inner workings of the top-performing models, I used four comple
 
 These two models were chosen for their strong predictive performance (`F1 ≈ 0.90` and `F1 ≈ 0.79`, respectively) and for capturing two different perspectives: one with the full feature set, and one with a constrained but sociologically rich set of predictors. Together, they offer insight into both what the models learned and how predictions were shaped by variables tied to mental health, identity, and structure.
 
-### Variable Importance (VIP)
+## Variable Importance (VIP)
 
 Variable importance plots were generated for both selected models using Gini-based importance scores. These plots reveal which features had the strongest overall influence on model predictions.
 
@@ -443,7 +447,7 @@ load(here("model_explainability/results/vip_dtree_quest_m3.rda"))
 vip_plot_m3
 ```
 
-### SHAP Values
+## SHAP Values
 
 To further interpret how specific features influenced individual predictions, SHAP (SHapley Additive exPlanations) values were computed for both selected models. These plots decompose predictions into additive contributions from each feature for a representative observation.
 
@@ -483,7 +487,7 @@ load(here("model_explainability/results/shap_explanation_m3_tree.rda"))
 shap_plot_m3
 ```
 
-### Partial Dependence Plots (PDPs)
+## Partial Dependence Plots (PDPs)
 
 Partial dependence plots were used to explore how individual features influence the model’s predicted depression risk, averaged across all observations.
 
@@ -525,11 +529,11 @@ combined_pdp_plot_m3
 
 ```
 
-### Local Explanations
+## Local Explanations
 
 To better understand how individual predictions were made, we used local explanation plots from the `fastshap` package. These visualizations break down the predicted probability for a single observation, showing how each feature contributed to pushing the prediction above or below the model’s base rate (intercept of 0.5). We applied this to both selected decision tree models: **Kitchen Sink** and **M3**, both evaluated on Quest.
 
-#### Kitchen Sink Model
+### Kitchen Sink Model
 
 ```{r}
 #| label: fig-local-ks
@@ -546,7 +550,7 @@ In the **Kitchen Sink** model (@fig-local-ks), the prediction for the selected i
 
 Negative or neutral contributors included **age**, **region**, and **household tenure**. However, their magnitudes were minimal compared to the dominant behavioral health factors. This confirms that in models where access and mental health variables are available, they overwhelmingly drive predictions.
 
-
+### M3 Model
 ```{r}
 #| label: fig-local-m3
 #| fig-cap: "Local explanation for a single observation (Kitchen Sink model – Decision Tree)"
@@ -564,7 +568,7 @@ On the other hand, **being male** and **residing in a large metro area** slightl
 
 This breakdown shows how the model compensates for the lack of behavioral health data. Without information on anxiety or therapy, the tree shifts weight toward **demographic and social context** still producing a relatively high-risk prediction, but from a very different rationale.
 
-## Discussion
+# Discussion
 
 This study explored the use of interpretable machine learning models to predict depression among individuals with intersecting marginalized identities — specifically LGBTQ+ and migrant populations — using sociological and health variables from the National Health Interview Survey (NHIS). This thesis focused in depth on decision trees due to their intuitive structure and ability to produce clear, visual explanations. Among the multiple models trained and evaluated, those built on Quest using the Kitchen Sink and M3 feature sets demonstrated the strongest performance. The Kitchen Sink model achieved an F-measure of **0.836** and an area under the ROC curve (AUC) of **0.878**, while the M3 model followed closely with an F-measure of **0.812** and an AUC of **0.861**.
 
@@ -587,8 +591,25 @@ While decision trees were selected due to their compatibility with interpretabil
 This work demonstrates the value of interpretable machine learning as a bridge between computational rigor and sociological inquiry, enabling both predictive insight and critical reflection on structural health disparities.
 
 
+# Conclusion
 
+This thesis set out to predict depression using interpretable machine learning models, with a particular focus on individuals whose identities often place them at the intersection of structural disadvantage, namely LGBTQ+ and migrant populations. Drawing on five years of National Health Interview Survey (NHIS) data, the project combined sociological insight with algorithmic modeling to assess how demographic, medical, and social factors contribute to depression risk.
 
+Decision trees were chosen for their clarity and compatibility with explainability tools, enabling both strong predictive performance and transparent interpretation. Models trained using the Kitchen Sink and M3 feature sets achieved high F-measure and AUC scores, while SHAP values and local explanation plots made it possible to trace individual-level predictions. Stratifying the dataset across four subgroups ensured fairness across intersectional identities, with only minor variation in performance.
+
+The findings highlight not only the predictive value of clinical and demographic variables like anxiety diagnosis, income, and regional context, but also the importance of incorporating marginalized identities into model design. While some predictors, such as self-reported depression frequency, raised questions about conceptual overlap, the overall framework demonstrated that it is possible to build both accurate and socially aware models of mental health risk.
+
+This project contributes to the growing body of work at the intersection of data science and social science by emphasizing transparency, subgroup fairness, and the integration of theory into applied modeling. Future work might explore additional model types, such as random forests or boosted trees, or extend this approach to other health outcomes and survey datasets. More broadly, this work serves as a case study in using machine learning not only to predict, but to reflect, helping surface the structural patterns that shape mental health across identity lines.
+
+# Appendix
+
+## Reproducibility & Data Access
+
+All code used in this analysis is available in the accompanying GitHub repository (link below). Due to file size constraints, certain datasets and intermediate files have been uploaded separately to a publicly accessible Google Drive folder:
+
+- Google Drive folder: [Insert link here]
+
+To fully reproduce the results, users should download the files in that folder and place them in the appropriate directory as noted in the README or code comments. The main script files are structured for execution on both local machines and the Quest high-performance computing cluster.
 
 
 
