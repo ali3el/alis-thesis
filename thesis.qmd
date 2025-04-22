@@ -1,35 +1,23 @@
 ---
-title: "Predicting Depression from Sociological Variables using Machine Learning"
-subtitle: |
-  | Data Science Senior Thesis
-author: "Ali Slayie"
-date: today
+title-block: none
 
 format:
-  html:
-    toc: true
-    embed-resources: true
-    citation: true
-    csl: apa.csl
-    bibliography: references.bib
   pdf:
-    toc: true
+    toc: false
+    lof: false
+    lot: false
     number-sections: true
-    lof: true
-    lot: true
+    include-in-header: preamble.tex
+    include-before-body: title-page.tex
     page-numbers: true
-    cite-method: citeproc
-    citation: true
+    toc-depth: 2
     csl: apa.csl
     bibliography: references.bib
-
-citation-style: author-date
 
 execute:
-  echo: true
+  echo: false
   warning: false
-
-from: markdown+emoji
+  message: false
 ---
 
 ::: {.callout-tip icon=false}
@@ -49,6 +37,21 @@ library(knitr)
 
 load(here("data_combined/dist_barplots.rda"))
 ```
+
+# Abstract
+
+Write your abstract here...
+
+\newpage
+
+\tableofcontents
+\newpage
+
+\listoffigures
+\newpage
+
+\listoftables
+\newpage
 
 # Introduction
 
@@ -70,7 +73,7 @@ This thesis is guided by the following core research questions:
 
 The objective is to build a technically rigorous, interpretable, and generalizable predictive pipeline that demonstrates advanced data science capabilities, while ensuring that social context informs—rather than overshadows—the modeling process.
 
-
+\newpage
 # Literature Review
 
 Although depression has been widely studied across disciplines, most existing research focuses on documenting disparities or testing associations, rather than developing predictive models. This thesis contributes to a growing body of work that leverages machine learning to predict mental health outcomes, while incorporating sociologically meaningful variables such as race, gender identity, sexual orientation, and migration status. By emphasizing interpretability, this project bridges technical rigor with social awareness.
@@ -79,7 +82,7 @@ This work sits at the intersection of two under-connected literatures — sociol
 
 ## Machine Learning for Mental Health Prediction
 
-Recent years have seen increased use of machine learning (ML) in mental health research, including efforts to predict depression from electronic health records, online behavior, or self-report surveys. For example, Nickson et al. (2023) conducted a systematic review of ML-based approaches using electronic health records to predict depression, highlighting a wide range of models, including logistic regression, support vector machines, and ensemble methods, while also acknowledging the lack of subgroup-specific evaluation ([source](https://bmcmedinformdecismak.biomedcentral.com/articles/10.1186/s12911-023-02341-x)). Similarly, Lee and Ham (2022) reviewed recent applications of machine learning in early depression diagnosis and noted the dominance of black-box models that prioritize performance over interpretability ([source](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9441463/?utm_source=chatgpt.com)).
+Recent years have seen increased use of machine learning (ML) in mental health research, including efforts to predict depression from electronic health records, online behavior, or self-report surveys. For example, Nickson et al. (2023) conducted a systematic review of ML-based approaches using electronic health records to predict depression, highlighting a wide range of models, including logistic regression, support vector machines, and ensemble methods, while also acknowledging the lack of subgroup-specific evaluation (@P_Nickson_2023). Similarly, Lee and Ham (2022) reviewed recent applications of machine learning in early depression diagnosis and noted the dominance of black-box models that prioritize performance over interpretability (@M_Lee_2022).
 
 Even studies that aim to improve interpretability often focus on feature engineering or performance tuning, without accounting for identity-based variation in prediction quality. Furthermore, many predictive models operate as “black boxes,” offering high accuracy but limited insight into the mechanisms behind their predictions. This thesis builds on emerging work that employs interpretable models—such as decision trees—alongside model explanation techniques like SHAP values and partial dependence plots, in order to provide transparent, actionable insights. The approach incorporates repeated cross-validation, subgroup balancing, and structured data preparation—key components of a robust predictive modeling framework.
 
@@ -87,9 +90,9 @@ Few existing studies stratify model performance across intersectional identities
 
 ## Sociological Determinants of Depression
 
-Extensive research has shown that LGBTQ+ individuals and migrants face elevated risks of depression, anxiety, and related mental health conditions. These disparities are shaped by chronic exposure to stress, discrimination, and systemic barriers to care. For example, LGB adults are significantly more likely to experience depression and suicidal ideation than their heterosexual peers ([source](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7876969/)). Migrants often face compounded stress from legal precarity, social isolation, and acculturative pressures, which can further increase risk. Structural inequalities — such as housing insecurity, lack of insurance, and regional disparities in care — also play a key role.
+Extensive research has shown that LGBTQ+ individuals and migrants face elevated risks of depression, anxiety, and related mental health conditions. These disparities are shaped by chronic exposure to stress, discrimination, and systemic barriers to care. For example, LGB adults are significantly more likely to experience depression and suicidal ideation than their heterosexual peers (@M_M._2021). Migrants often face compounded stress from legal precarity, social isolation, and acculturative pressures, which can further increase risk. Structural inequalities — such as housing insecurity, lack of insurance, and regional disparities in care — also play a key role.
 
-Medical comorbidities, often more prevalent in marginalized groups, further complicate the mental health landscape. Conditions such as hypertension ([source](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4077111/)), cholesterol imbalance ([source](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4215473/)), cardiovascular disease ([source](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10951381/)), chronic obstructive pulmonary disease (COPD) ([source](https://journal.copdfoundation.org/jcopdf/id/1482/From-Invisibility-to-Inclusion-A-Call-to-Action-to-Address-COPD-Disparities-in-the-Lesbian-Gay-Bisexual-Transgender-and-Queer-Community)), epilepsy ([source](https://healthlgbtq.org/resources-news/)), and inflammatory bowel disease (IBD) ([source](https://www.health.harvard.edu/blog/ibd-and-lgbtq-how-it-can-affect-sexual-health-202306282949)) have all been linked to increased risk of depression. These health conditions disproportionately affect LGBTQ+ individuals, adding biomedical complexity to social disadvantage.
+Medical comorbidities, often more prevalent in marginalized groups, further complicate the mental health landscape. Conditions such as hypertension (@M_A_2014), cholesterol imbalance (@fiedorowicz2010cholesterol), cardiovascular disease (@L_A._2024), chronic obstructive pulmonary disease (COPD) (@F_T._2024), and inflammatory bowel disease (IBD) (@eidelberg2023ibd) have all been linked to increased risk of depression. These health conditions disproportionately affect LGBTQ+ individuals, adding biomedical complexity to social disadvantage.
 
 While these patterns are well-established in the public health literature, they are rarely integrated into predictive frameworks that account for both medical and social risk factors.
 
@@ -97,16 +100,17 @@ While these patterns are well-established in the public health literature, they 
 
 Sociological literature frequently invokes theories of intersectionality and minority stress to explain disparities in mental health. However, much of this research remains qualitative or descriptive, and rarely incorporates large-scale datasets. On the other hand, many data science applications ignore identity-based variables or fail to contextualize their predictions within structural inequalities. This thesis seeks to bridge these gaps by combining interpretable modeling with identity- and condition-based features derived from five years of the National Health Interview Survey (NHIS).
 
-The minority stress model ([Meyer, 2003](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2072932/)) has been instrumental in explaining elevated mental health risks among LGBTQ+ individuals, but such frameworks have not yet been operationalized through algorithmic modeling. Similarly, few studies explore how these dynamics interact with migration status in statistical models.
+The minority stress model (@P_H._2013) has been instrumental in explaining elevated mental health risks among LGBTQ+ individuals, but such frameworks have not yet been operationalized through algorithmic modeling. Similarly, few studies explore how these dynamics interact with migration status in statistical models.
 
 The inclusion of features like anxiety history, physical comorbidities, and demographic identity reflects an intentional blending of sociological theory with algorithmic modeling. By balancing the dataset across LGBTQ+ and migrant subgroups and applying explainability techniques, this project aims to build not only accurate but also socially conscious predictive tools.
 
 Unlike most prior work, this thesis evaluates model fairness across four distinct subgroups (LGBTQ+ migrants, LGBTQ+ non-migrants, straight migrants, straight non-migrants), offering one of the first intersectional evaluations of depression prediction performance using interpretable machine learning.
 
+\newpage
 
 # Data Source Overview and Cleaning
 
-This project utilizes data from the [National Health Interview Survey (NHIS)](https://www.cdc.gov/nchs/nhis/index.html), a large-scale, nationally representative survey conducted by the U.S. Centers for Disease Control and Prevention (CDC). The dataset provides detailed information on the health, demographic, and socioeconomic characteristics of individuals in the United States. Data from multiple years (2019–2023) were consolidated into a single dataset, resulting in a robust sample of over 100,000 observations.
+This project utilizes data from the National Health Interview Survey (NHIS)(@cdc_nhis_2019_2023), a large-scale, nationally representative survey conducted by the U.S. Centers for Disease Control and Prevention (CDC). The dataset provides detailed information on the health, demographic, and socioeconomic characteristics of individuals in the United States. Data from multiple years (2019–2023) were consolidated into a single dataset, resulting in a robust sample of over 100,000 observations.
 
 During the data cleaning process, consistent variable naming conventions were applied across all datasets to ensure uniformity. For example, variables such as *EDUC_A* and *MAXEDUC_A* were renamed to more descriptive labels like *education_level* and *max_education_level* to improve clarity. Missing columns were added where necessary, and missing values were handled using mode imputation for categorical variables (e.g., imputing the most common value for region) and median imputation for numeric variables (e.g., filling in missing age values with the median age).
 
@@ -179,6 +183,7 @@ To support experimentation and scalability, I constructed two modeling pipelines
 
 This two-track approach allowed for fast iteration and robust evaluation, while ensuring that all modeling decisions were transferable between the smaller and larger datasets.
 
+\newpage
 
 # Methods
 
@@ -306,6 +311,8 @@ Secondary metrics included:
 
 All metrics were computed and averaged across resampling iterations to ensure stable and unbiased comparisons across model types.
 
+\newpage
+
 # Results
 
 ## Modeling Overview
@@ -379,7 +386,7 @@ The tables below present the **top five performing model–feature set combinati
 
 ```{r}
 #| label: tbl-local
-#| tbl-cap: "Accuracy by Model and Feature Set (Grouped by Platform)"
+#| tbl-cap: "Accuracy by Model and Feature Set (Grouped by Platform) - Local"
 #| echo: false
 load(here("master_comparison/local_model_results.rda"))
 local_best_models |>
@@ -390,7 +397,7 @@ local_best_models |>
 
 ```{r}
 #| label: tbl-quest
-#| tbl-cap: "Accuracy by Model and Feature Set (Grouped by Platform)"
+#| tbl-cap: "Accuracy by Model and Feature Set (Grouped by Platform) - Quest"
 #| echo: false
 load(here("master_comparison/quest_model_results.rda"))
 quest_best_models |>
@@ -410,6 +417,8 @@ In contrast, models trained only on M1 (group membership) performed poorly acros
 RuleFit also underperformed in both environments. While it offers interpretability, it might have been too rigid to adapt to the variable complexity or limited by the group-only input.
 
 Finally, it's worth noting that the overall rankings stayed consistent between Quest and Local, even though the number of resamples was different. That consistency gives more confidence that the results aren’t just random noise or overfitting to a specific setup. These findings reinforce the value of including sociological and structural context when building predictive models for mental health outcomes.
+
+\newpage
 
 # Model Explainability
 
@@ -586,6 +595,7 @@ Conversely, **being male** and **residing in a large metro area** slightly reduc
 
 This breakdown illustrates how the model compensates for the absence of behavioral health data. Without information on anxiety or therapy use, the model shifts greater weight toward **demographic and social context**, still producing a relatively high-risk prediction, but based on a very different rationale and feature set.
 
+\newpage
 
 # Discussion
 
@@ -609,6 +619,8 @@ While decision trees were selected due to their compatibility with interpretabil
 
 Ultimately, this work demonstrates how interpretable machine learning can serve as a bridge between computational rigor and sociological inquiry—supporting both predictive insight and structural reflection in public health research.
 
+\newpage
+
 # Conclusion
 
 This thesis set out to predict depression using interpretable machine learning models, with a particular focus on individuals situated at the intersection of structural disadvantage—namely, LGBTQ+ and migrant populations. Drawing on five years of National Health Interview Survey (NHIS) data, the project integrated sociological insight with algorithmic modeling to examine how demographic, medical, and social factors contribute to depression risk.
@@ -618,6 +630,14 @@ Decision trees were selected for their clarity and compatibility with interpreta
 The findings highlight not only the predictive value of clinical and demographic variables like anxiety diagnosis, income, and regional context, but also the importance of incorporating marginalized identities into model design. While some predictors, such as self-reported depression frequency, raised questions about conceptual overlap, the overall framework demonstrated that it is possible to build both accurate and socially aware models of mental health risk.
 
 This project contributes to the growing body of work at the intersection of data science and social science by emphasizing transparency, subgroup fairness, and the integration of theory into applied modeling. Future work might explore additional model types, such as random forests or boosted trees, or extend this approach to other health outcomes and survey datasets. More broadly, this work offers a case study in using machine learning not only as a predictive tool, but also as a lens for reflecting on the structural forces that shape mental health across identity lines.
+
+\newpage
+
+# References
+::: {#refs}
+:::
+
+\newpage
 
 # Appendix
 
@@ -636,6 +656,8 @@ Code for preprocessing and local experimentation is available on GitHub:
 [Link to Repository](https://github.com/ali3el/alis-thesis.git)
 
 To fully reproduce the results, download the Drive folder, follow the directory structure described in the included README, and refer to the GitHub repo for project context and code dependencies.
+
+##
 
 
 
