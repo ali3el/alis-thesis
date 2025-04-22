@@ -3076,7 +3076,7 @@ vertical-align: -.125em;
   <li><a href="#parameters-tuning" id="toc-parameters-tuning" class="nav-link" data-scroll-target="#parameters-tuning">Parameters Tuning</a></li>
   <li><a href="#preprocessing-pipelines---feature-engineering" id="toc-preprocessing-pipelines---feature-engineering" class="nav-link" data-scroll-target="#preprocessing-pipelines---feature-engineering">Preprocessing Pipelines - Feature Engineering</a>
   <ul class="collapse">
-  <li><a href="#model-recipes" id="toc-model-recipes" class="nav-link" data-scroll-target="#model-recipes">Model Recipes</a></li>
+  <li><a href="#predictor-sets-by-model-type" id="toc-predictor-sets-by-model-type" class="nav-link" data-scroll-target="#predictor-sets-by-model-type">Predictor Sets by Model Type</a></li>
   <li><a href="#tree-based-vs.-non-tree-based-recipes" id="toc-tree-based-vs.-non-tree-based-recipes" class="nav-link" data-scroll-target="#tree-based-vs.-non-tree-based-recipes">Tree-Based vs. Non-Tree-Based Recipes</a></li>
   </ul></li>
   <li><a href="#resampling-technique" id="toc-resampling-technique" class="nav-link" data-scroll-target="#resampling-technique">Resampling Technique</a></li>
@@ -3158,19 +3158,19 @@ Github Repo Link
 </div>
 <section id="introduction" class="level1">
 <h1>Introduction</h1>
-<p>Depression remains one of the most prevalent and complex issues in public health in the United States. While the condition affects people across all demographics, its distribution and severity are far from random. Research has consistently shown how social determinants like, but not limited to, migration status, sexual orientation, and gender identity can shape mental health outcomes. However, these sociological variables are often underexplored in predictive modeling, especially in ways that reflect their impacts when looking from lenses that account for intersectionality of identities.</p>
-<p>This thesis frames mental health prediction not just as a question of individual outcomes, but as a data science challenge rooted in social complexity. By using the National Health Interview Survey (NHIS) from 2019 to 2023, I explore whether depression can be effectively predicted based on a range of demographic and social variables—particularly those tied to migration and LGBTQ+ (Lesbian, Gay, Bisexual, Transgender, Queer, and more) identity. Rather than treating these as fixed categories, this project tests the predictive strength of these identities through rigorous modeling, group balancing, and explainability techniques.</p>
-<p>The objective of this project is not only to identify which variables are most predictive of depression but also to demonstrate how thoughtful preprocessing, model evaluation, and interpretability can shed light on social disparities without compromising technical rigor. While the topic is socially meaningful, the thesis remains firmly situated in the data science domain, emphasizing methodological complexity, performance benchmarking, and scalable analysis pipelines.</p>
+<p>Depression remains one of the most prevalent and complex issues in public health in the United States. While the condition affects people across all demographics, its distribution and severity are far from random. Research has consistently shown how social determinants such as migration status, sexual orientation, and gender identity can shape mental health outcomes. However, these sociological variables are often underexplored in predictive modeling, especially in ways that reflect their impacts through an intersectional lens.</p>
+<p>This thesis frames mental health prediction not just as a question of individual outcomes, but as a data science challenge rooted in social complexity. By using the National Health Interview Survey (NHIS) from 2019 to 2023, I explore whether depression can be effectively predicted based on a range of demographic and social variables—particularly those tied to migration and LGBTQ+ (Lesbian, Gay, Bisexual, Transgender, Queer, and more) identity. Rather than treating these as fixed categories, this project examines the predictive power of these identities through rigorous modeling, subgroup balancing, and model interpretation techniques.</p>
+<p>The objective of this project is not only to identify which variables are most predictive of depression but also to demonstrate how thoughtful data preparation, model evaluation, and interpretation can shed light on social disparities without compromising technical rigor. While the topic is socially meaningful, the thesis remains firmly situated in the data science domain, emphasizing methodological complexity, performance benchmarking, and scalable analysis pipelines.</p>
 <section id="research-questions-and-objectives" class="level2">
 <h2 class="anchored" data-anchor-id="research-questions-and-objectives">Research Questions and Objectives</h2>
 <p>This thesis is guided by the following core research questions:</p>
 <ol type="1">
-<li>Can depression be predicted using sociological variables from the NHIS dataset, particularly those related to migration and LGBTQ+ identity?</li>
+<li>To what extent can depression be predicted using sociologically meaningful variables from the NHIS dataset—particularly those related to migration and LGBTQ+ identity?</li>
 <li>How do model performance and feature importance vary across four key subgroups: LGBTQ+ migrants, LGBTQ+ non-migrants, straight migrants, and straight non-migrants?</li>
-<li>What data preprocessing, balancing, and model tuning strategies yield the best predictive performance?</li>
+<li>Which data preparation, subgroup balancing, and model tuning strategies yield the strongest predictive performance?</li>
 <li>How can explainability techniques help interpret and contextualize model predictions in a socially responsible way?</li>
 </ol>
-<p>The objective is to build a technically rigorous, interpretable, and generalizable predictive pipeline that demonstrates advanced data science capabilities—while using social context to inform modeling decisions rather than overshadow them.</p>
+<p>The objective is to build a technically rigorous, interpretable, and generalizable predictive pipeline that demonstrates advanced data science capabilities, while ensuring that social context informs—rather than overshadows—the modeling process.</p>
 </section>
 </section>
 <section id="literature-review" class="level1">
@@ -3179,8 +3179,8 @@ Github Repo Link
 <p>This work sits at the intersection of two under-connected literatures — sociological theory on structural inequality and algorithmic modeling in health research — and aims to address the limitations of both.</p>
 <section id="machine-learning-for-mental-health-prediction" class="level2">
 <h2 class="anchored" data-anchor-id="machine-learning-for-mental-health-prediction">Machine Learning for Mental Health Prediction</h2>
-<p>Recent years have seen increased use of machine learning (ML) in mental health research, including efforts to predict depression from electronic health records, online behavior, or self-report surveys. For example, Nickson et al. (2023) conducted a systematic review of ML-based approaches using electronic health records to predict depression, highlighting a wide range of algorithms including logistic regression, support vector machines, and ensemble models, while also acknowledging the lack of subgroup-specific evaluation (<a href="https://bmcmedinformdecismak.biomedcentral.com/articles/10.1186/s12911-023-02341-x?utm_source=chatgpt.com">source</a>). Similarly, Lee and Ham (2022) reviewed recent applications of machine learning in early depression diagnosis and noted the dominance of black-box models that prioritize performance over interpretability (<a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9441463/?utm_source=chatgpt.com">source</a>).</p>
-<p>Even studies that aim to improve interpretability often focus on feature engineering or performance tuning, without accounting for identity-based variation in prediction quality. Furthermore, many predictive models operate as “black boxes,” offering high accuracy but limited insight into the mechanisms behind their predictions. This thesis builds on emerging work that uses interpretable models — such as decision trees — alongside explainability tools like SHAP values and partial dependence plots to provide transparent, actionable insights. The use of cross-validation, subgroup stratification, and feature engineering pipelines aligns with best practices in applied data science.</p>
+<p>Recent years have seen increased use of machine learning (ML) in mental health research, including efforts to predict depression from electronic health records, online behavior, or self-report surveys. For example, Nickson et al. (2023) conducted a systematic review of ML-based approaches using electronic health records to predict depression, highlighting a wide range of models, including logistic regression, support vector machines, and ensemble methods, while also acknowledging the lack of subgroup-specific evaluation (<a href="https://bmcmedinformdecismak.biomedcentral.com/articles/10.1186/s12911-023-02341-x">source</a>). Similarly, Lee and Ham (2022) reviewed recent applications of machine learning in early depression diagnosis and noted the dominance of black-box models that prioritize performance over interpretability (<a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9441463/?utm_source=chatgpt.com">source</a>).</p>
+<p>Even studies that aim to improve interpretability often focus on feature engineering or performance tuning, without accounting for identity-based variation in prediction quality. Furthermore, many predictive models operate as “black boxes,” offering high accuracy but limited insight into the mechanisms behind their predictions. This thesis builds on emerging work that employs interpretable models—such as decision trees—alongside model explanation techniques like SHAP values and partial dependence plots, in order to provide transparent, actionable insights. The approach incorporates repeated cross-validation, subgroup balancing, and structured data preparation—key components of a robust predictive modeling framework.</p>
 <p>Few existing studies stratify model performance across intersectional identities, making it difficult to assess fairness or subgroup validity in mental health prediction. This project addresses that gap directly.</p>
 </section>
 <section id="sociological-determinants-of-depression" class="level2">
@@ -3199,10 +3199,10 @@ Github Repo Link
 </section>
 <section id="data-source-overview-and-cleaning" class="level1">
 <h1>Data Source Overview and Cleaning</h1>
-<p>This project utilizes data from the <a href="https://www.cdc.gov/nchs/nhis/index.html">National Health Interview Survey (NHIS)</a>, a large-scale, nationally representative survey conducted by the U.S. Centers for Disease Control and Prevention (CDC). The dataset provides detailed information on the health, demographic, and socioeconomic characteristics of individuals in the United States. Data from multiple years (2019-2023) were consolidated into a single dataset, resulting in a robust sample of over 100,000 observations.</p>
-<p>In the data cleaning process, consistent variable naming conventions were applied across all datasets to ensure uniformity. For example, variables such as <code>EDUC_A</code> and <code>MAXEDUC_A</code> were renamed to <code>education_level</code> and <code>max_education_level</code>, respectively, to improve clarity and consistency. Missing columns were added where necessary, and missing values were handled using mode imputation for categorical variables (e.g., imputing the most common value for region) and median imputation for numerical variables (e.g., filling missing values in age with the dataset’s median age).</p>
-<p>Additionally, variable types were standardized to align with the requirements of various modeling approaches. For instance, binary variables like <code>depression_ever</code> and <code>anxiety_ever</code> were converted into factors with levels “Yes” and “No,” while ordinal variables such as <code>life_satisfaction</code> were encoded with ordered levels ranging from “Very dissatisfied” to “Very satisfied.” These steps were essential to prepare the dataset for feature engineering and subsequent modeling tasks, ensuring its quality and usability for analysis.</p>
-<p><a href="#fig-dist1" class="quarto-xref">Figure 1</a> below demonstrates the distribution of the data focus group for this project:</p>
+<p>This project utilizes data from the <a href="https://www.cdc.gov/nchs/nhis/index.html">National Health Interview Survey (NHIS)</a>, a large-scale, nationally representative survey conducted by the U.S. Centers for Disease Control and Prevention (CDC). The dataset provides detailed information on the health, demographic, and socioeconomic characteristics of individuals in the United States. Data from multiple years (2019–2023) were consolidated into a single dataset, resulting in a robust sample of over 100,000 observations.</p>
+<p>During the data cleaning process, consistent variable naming conventions were applied across all datasets to ensure uniformity. For example, variables such as <em>EDUC_A</em> and <em>MAXEDUC_A</em> were renamed to more descriptive labels like <em>education_level</em> and <em>max_education_level</em> to improve clarity. Missing columns were added where necessary, and missing values were handled using mode imputation for categorical variables (e.g., imputing the most common value for region) and median imputation for numeric variables (e.g., filling in missing age values with the median age).</p>
+<p>Variable types were also standardized to align with the requirements of various modeling approaches. Binary variables such as <em>depression_ever</em> and <em>anxiety_ever</em> were encoded with levels “Yes” and “No,” while ordinal variables like <em>life_satisfaction</em> were mapped to ordered levels ranging from “Very dissatisfied” to “Very satisfied.” These steps ensured the dataset was fully prepared for feature construction and downstream modeling tasks.</p>
+<p>Figure <a href="#fig-dist1" class="quarto-xref">Figure 1</a> below shows the distribution of the final sample, stratified by the identity groups used throughout the project.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-dist1" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -3219,7 +3219,8 @@ Figure 1: Distribution of Focus Group
 </div>
 <section id="target-variable" class="level2">
 <h2 class="anchored" data-anchor-id="target-variable">Target Variable</h2>
-<p>The target variable is self-reported depression, measured by the NHIS variable <code>DEPEV_A</code> (Have you ever had depression?). This binary variable serves as the outcome of interest for all classification models. Given the binary nature of the target variable, the prediction problem in this project is classification. <a href="#fig-dist2" class="quarto-xref">Figure 2</a> below displays the distribution of the target variable:</p>
+<p>The target variable is self-reported depression, measured by the NHIS variable <em>DEPEV_A</em> (“Have you ever had depression?”). This binary variable serves as the outcome of interest for all classification models. Because this variable is binary, the modeling task is framed as a classification problem.</p>
+<p>Figure <a href="#fig-dist2" class="quarto-xref">Figure 2</a> below shows the distribution of self-reported depression responses in the dataset.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-dist2" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -3237,12 +3238,12 @@ Figure 2: Distribution of Target Variable
 </section>
 <section id="key-predictors" class="level2">
 <h2 class="anchored" data-anchor-id="key-predictors">Key Predictors</h2>
-<p>To investigate the social and structural factors influencing depression, this project used a layered modeling strategy. Predictors were added incrementally across four model types, allowing for a clear understanding of how different variable sets contribute to predictive performance. This approach also helped isolate the impact of group membership versus other confounding factors.</p>
+<p>To investigate the social and structural factors influencing depression, this project used an incremental modeling strategy, adding predictors step-by-step across four model types, allowing for a clear understanding of how different variable sets contribute to predictive performance. This structure also helped isolate the predictive contribution of group membership relative to other explanatory factors.</p>
 <p>The variable sets used in each model were:</p>
 <ul>
 <li><p><strong>Model 1: Group Membership Only</strong><br>
 Included a single categorical variable representing identity group membership: LGBTQ+ migrant, LGBTQ+ non-migrant, straight migrant, and straight non-migrant. This baseline model assessed whether group membership alone was predictive of depression outcomes. An accompanying OLS model was also run on <code>PHSTAT_A</code> (self-rated health) to capture group differences in general health perception.</p></li>
-<li><p><strong>Model 2: + Demographic Variables</strong><br>
+<li><p><strong>Model 2: Group Membership + Demographic Variables</strong><br>
 Added basic demographic features including:</p>
 <ul>
 <li>Gender identity</li>
@@ -3297,22 +3298,22 @@ These predictors allowed for the evaluation of healthcare access as a potential 
 <li>Straight non-migrants</li>
 </ol>
 <p>Initial exploration of the NHIS dataset revealed substantial class imbalance—both in the distribution of the target variable (depression) and in the sizes of these identity groups. To mitigate bias and ensure fair representation across all four subgroups, I created a <strong>balanced analytical dataset of approximately 40,000 observations</strong>, with roughly <strong>10,000 observations per group</strong>.</p>
-<p>This dataset was constructed using a combination of <strong>upsampling underrepresented groups</strong> and <strong>downsampling overrepresented ones</strong>. By maintaining balance across the four identity-based groups, this approach allowed for a clearer comparison of model performance and subgroup disparities without the confounding effects of unequal sample sizes.</p>
+<p>This dataset was constructed using a combination of <strong>increasing the number of samples in underrepresented groups (upsampling)</strong> and <strong>downsampling overrepresented ones</strong>. By maintaining balance across the four identity-based groups, this approach allowed for a clearer comparison of model performance and subgroup disparities without the confounding effects of unequal sample sizes.</p>
 <p>All modeling in this thesis was conducted on this balanced dataset to align with the project’s emphasis on <strong>equity-aware modeling</strong>, interpretability, and methodological consistency across experiments.</p>
 </section>
 <section id="data-splitting-resampling-strategy" class="level2">
 <h2 class="anchored" data-anchor-id="data-splitting-resampling-strategy">Data Splitting &amp; Resampling Strategy</h2>
-<p>All modeling was conducted on a balanced dataset of approximately 40,000 observations, with equal representation across the four identity-based subgroups. Two resampling setups were used during the project:</p>
+<p>All modeling was conducted on a balanced dataset of approximately 40,000 observations, with equal representation across the four identity-based subgroups. Two resampling setups were used throughout the project to train and evaluate the models.</p>
 <ul>
 <li><p><strong>Initial modeling (local machine)</strong> used <strong>4-fold cross-validation with 3 repeats</strong>, allowing for fast iteration and exploratory analysis of different variable sets and model types resulting in 12 total resamples per model.</p></li>
 <li><p><strong>Final modeling (Quest high-performance cluster)</strong> used a more rigorous <strong>10-fold cross-validation with 5 repeats</strong>, resulting in 50 total resamples per model. This setup provided more stable performance estimates and was used for final evaluations and comparisons.</p></li>
 </ul>
-<p>In both setups, <strong>stratified resampling</strong> was used based on the binary target variable (<code>depression_ever</code>) to preserve class proportions within each fold. This ensured consistent performance measurement and reduced bias due to class imbalance.</p>
+<p>In both setups, <strong>stratified resampling</strong> was used based on the binary depression indicator to preserve class proportions within each fold. This ensured consistent performance measurement and reduced bias due to class imbalance.</p>
 <p>The use of two-tiered cross-validation allowed the project to balance exploratory modeling with rigorous evaluation—without compromising reproducibility.</p>
 </section>
 <section id="model-types" class="level2">
 <h2 class="anchored" data-anchor-id="model-types">Model Types</h2>
-<p>To explore a range of predictive strategies, I implemented five classification algorithms using the <code>tidymodels</code> framework in R. These models were chosen to reflect varying levels of complexity, flexibility, and interpretability:</p>
+<p>To explore a range of predictive strategies, I implemented five classification algorithms using a unified modeling framework in R (<em>tidymodels</em>). These models were chosen to reflect varying levels of complexity, flexibility, and interpretability:</p>
 <ul>
 <li><p><strong>Logistic Regression</strong><br>
 A linear model commonly used for binary classification. It provides coefficients that are easy to interpret and serves as a strong baseline.</p></li>
@@ -3323,7 +3324,7 @@ A non-parametric model that assigns classes based on the majority label among th
 <li><p><strong>Naive Bayes</strong><br>
 A probabilistic model that applies Bayes’ Theorem under the assumption of feature independence. It performs surprisingly well in many high-dimensional settings.</p></li>
 <li><p><strong>RuleFit</strong><br>
-A hybrid model that extracts rules from tree ensembles and combines them with linear terms. It provides both performance and interpretability by using learned rules as features in a sparse linear model.</p></li>
+A hybrid model that extracts rules from tree ensembles and combines them with linear terms. It balances performance with interpretability by using learned rules as features in a sparse linear model.</p></li>
 </ul>
 <p>These models were trained and evaluated using the same cross-validation strategy on the balanced 40k dataset. The goal was to assess how different learning algorithms perform in predicting depression outcomes using sociologically-informed variables.</p>
 </section>
@@ -3332,10 +3333,10 @@ A hybrid model that extracts rules from tree ensembles and combines them with li
 </section>
 <section id="preprocessing-pipelines---feature-engineering" class="level2">
 <h2 class="anchored" data-anchor-id="preprocessing-pipelines---feature-engineering">Preprocessing Pipelines - Feature Engineering</h2>
-<p>To systematically evaluate how different sets of predictors influence model performance, I developed four core preprocessing pipelines (Model Types 1–4), each representing a different level of variable complexity. All recipes were built using the <code>recipes</code> package in R, and each had two versions: one for <strong>tree-based models</strong> and one for <strong>non-tree (parametric) models</strong>.</p>
+<p>To systematically evaluate how different sets of predictors influence model performance, I developed four core preprocessing pipelines (Model Types 1–4), each representing a different level of variable complexity. Each feature set was defined using a structured preprocessing workflow in R, and each had two versions: one for <strong>tree-based models</strong> and one for <strong>non-tree (parametric) models</strong>.</p>
 <p>In addition to these four structured pipelines, I also created a separate <strong>Kitchen Sink</strong> recipe that included all available predictors, serving as a maximal model for benchmarking purposes.</p>
-<section id="model-recipes" class="level3">
-<h3 class="anchored" data-anchor-id="model-recipes">Model Recipes</h3>
+<section id="predictor-sets-by-model-type" class="level3">
+<h3 class="anchored" data-anchor-id="predictor-sets-by-model-type">Predictor Sets by Model Type</h3>
 <ul>
 <li><p><strong>Model Type 1 (M1): Group-Only Model</strong><br>
 Included only the categorical variable for identity group membership (LGBTQ+ migrant, LGBTQ+ non-migrant, straight migrant, straight non-migrant).</p></li>
@@ -3368,7 +3369,7 @@ A separate recipe that included all available predictors in the dataset, spannin
 </ul></li>
 </ul>
 <p>This setup ensured that models were trained on appropriately preprocessed data based on their algorithmic assumptions, while keeping predictor sets consistent across model types.</p>
-<p>All recipes were prepped and baked using <code>prep()</code> and <code>bake()</code> from the <code>recipes</code> package, then saved for reproducibility and downstream modeling tasks.</p>
+<p>All preprocessing workflows were executed using standard tools in R and saved for reproducibility.</p>
 </section>
 </section>
 <section id="resampling-technique" class="level2">
@@ -3381,7 +3382,7 @@ Used <strong>4-fold cross-validation with 3 repeats</strong>, resulting in <stro
 <li><p><strong>Final modeling (Quest high-performance cluster):</strong><br>
 Used <strong>10-fold cross-validation with 5 repeats</strong>, resulting in <strong>50 resamples per model</strong>. This more rigorous configuration provided stable and generalizable performance estimates for final evaluation.</p></li>
 </ul>
-<p>In both cases, <strong>stratified resampling</strong> was used based on the binary target variable (<code>depression_ever</code>) to ensure consistent class proportions across all folds.</p>
+<p>In both cases, <strong>stratified resampling</strong> was used based on the binary depression outcome to ensure consistent class proportions across all folds.</p>
 <p>This two-tiered strategy balanced efficiency and rigor: fast iteration locally, followed by deeper evaluation at scale.</p>
 </section>
 <section id="performance-metrics" class="level2">
@@ -3391,25 +3392,23 @@ Used <strong>10-fold cross-validation with 5 repeats</strong>, resulting in <str
 <ul>
 <li><strong>Accuracy</strong>: the proportion of correctly classified observations<br>
 </li>
-<li><strong>Area Under the ROC Curve (AUC)</strong>: measures the ability of the model to distinguish between the two classes across all thresholds<br>
-</li>
+<li><strong>Area Under the ROC Curve (AUC)</strong>: measures the ability of the model to distinguish between the two classes across all classification thresholds, reflecting the model’s ability to rank positive cases higher than negative ones</li>
 <li><strong>Precision and Recall</strong>: reported individually to further interpret F1 dynamics</li>
 </ul>
-<p>All metrics were calculated using the <code>yardstick</code> package and averaged across all resampling iterations to ensure stable and unbiased comparisons across model types.</p>
+<p>All metrics were computed and averaged across resampling iterations to ensure stable and unbiased comparisons across model types.</p>
 </section>
 </section>
 <section id="results" class="level1">
 <h1>Results</h1>
 <section id="modeling-overview" class="level2">
 <h2 class="anchored" data-anchor-id="modeling-overview">Modeling Overview</h2>
-<p>Model performance was evaluated across five classification algorithms—Decision Tree, RuleFit, K-Nearest Neighbors (KNN), Logistic Regression, and Naive Bayes—using repeated stratified cross-validation on a balanced dataset of 40,000 observations. Each model was tested using a distinct recipe (M1–M4 or Kitchen Sink), resulting in a total of ten model-recipe combinations.</p>
+<p>Model performance was evaluated across five classification algorithms—Decision Tree, RuleFit, K-Nearest Neighbors (KNN), Logistic Regression, and Naive Bayes—using repeated stratified cross-validation on a balanced dataset of 40,000 observations. Each model was tested using a distinct feature set (M1–M4 or Kitchen Sink), resulting in a total of ten model-feature set combinations.</p>
 <p>To support both experimentation and scalability, models were run on two platforms: - A <strong>local pipeline</strong> using 4-fold cross-validation with 3 repeats (12 resamples total) - A <strong>Quest high-performance pipeline</strong> using 10-fold cross-validation with 5 repeats (50 resamples total)</p>
-<p>Each model-recipe pair was run on <strong>only one platform</strong>, not both—meaning platform and model-recipe configuration are tied together in the evaluation. The primary evaluation metric was <strong>F1 score</strong>, with <strong>accuracy</strong>, <strong>ROC AUC</strong>, <strong>precision</strong>, and <strong>recall</strong> used as complementary metrics.</p>
-<hr>
+<p>Each model-feature set combination was run on only one platform, not both, meaning the evaluation reflects the pairing of model, feature set, and compute environment. The primary evaluation metric was <strong>F1 score</strong>, with <strong>accuracy</strong>, <strong>ROC AUC</strong>, <strong>precision</strong>, and <strong>recall</strong> used as secondary evaluation criteria.</p>
 </section>
 <section id="model-and-recipe-comparison" class="level2">
 <h2 class="anchored" data-anchor-id="model-and-recipe-comparison">Model and Recipe Comparison</h2>
-<p>The best-performing configuration was a <strong>Decision Tree trained on the Kitchen Sink recipe</strong>, evaluated on <strong>Quest</strong>. This model achieved:</p>
+<p>The best-performing configuration was a <strong>Decision Tree trained on the full feature set (Kitchen Sink)</strong>, trained and evaluated on the <strong>Quest</strong> high-performance computing cluster. This model achieved:</p>
 <ul>
 <li><strong>F1 Score:</strong> ≈ 0.901<br>
 </li>
@@ -3423,13 +3422,13 @@ Used <strong>10-fold cross-validation with 5 repeats</strong>, resulting in <str
 </ul>
 <p>Other high-performing configurations included:</p>
 <ul>
-<li><strong>KNN + M4</strong> (Local): strong overall balance with <code>F1 ≈ 0.82</code><br>
+<li><strong>K-Nearest Neighbors + M4</strong> (Local): strong overall balance with <code>F1 ≈ 0.82</code><br>
 </li>
-<li><strong>KNN + M3</strong> (Quest): <code>F1 ≈ 0.80</code><br>
+<li><strong>K-Nearest Neighbors + M3</strong> (Quest): <code>F1 ≈ 0.80</code><br>
 </li>
 <li><strong>RuleFit + Kitchen Sink</strong> (Quest): <code>F1 ≈ 0.89</code>, slightly below Decision Tree</li>
 </ul>
-<p>In contrast, models trained on <strong>M1 (Group Membership Only)</strong> showed significantly lower F1 scores, especially on Local runs, suggesting that identity group alone is not sufficient for accurate prediction.</p>
+<p>In contrast, models trained on <strong>M1 (Group Membership Only)</strong> showed significantly lower F1 scores, especially on Local runs, indicating that identity group alone is not a sufficiently strong predictor of depression risk.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-f1" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -3448,10 +3447,10 @@ Figure 3: F1 Scores by Model and Recipe (Grouped by Platform)
 <section id="accuracy-and-roc-auc-trends" class="level2">
 <h2 class="anchored" data-anchor-id="accuracy-and-roc-auc-trends">Accuracy and ROC AUC Trends</h2>
 <p>While F1 score served as the primary evaluation metric, examining <strong>accuracy</strong> and <strong>ROC AUC</strong> provides a more complete picture of model performance.</p>
-<p>As shown in <strong>Figure 4</strong>, accuracy results closely aligned with F1 rankings. The <strong>Decision Tree + Kitchen Sink</strong> model (Quest) not only achieved the highest F1 score, but also led in accuracy at approximately <strong>90%</strong>, reinforcing its strong predictive capacity across multiple metrics. Similarly, <strong>KNN models paired with M3 and M4</strong> performed well on both platforms.</p>
+<p>As shown in <strong>Figure 4</strong>, accuracy trends closely mirrored the F1 score rankings. The <strong>Decision Tree + Kitchen Sink</strong> model (Quest) not only achieved the highest F1 score, but also led in accuracy at approximately <strong>90%</strong>, reinforcing its strong predictive capacity across multiple metrics. Similarly, <strong>KNN models paired with M3 and M4</strong> performed well on both platforms.</p>
 <p>In contrast, models trained on <strong>M1 (Group Only)</strong> underperformed in terms of accuracy, particularly with Naive Bayes and RuleFit, echoing their low F1 results.</p>
 <p>ROC AUC trends, shown in <strong>Figure 5</strong>, further contextualize these findings. While most high-F1 models also had high AUC scores (above 0.85), some models—such as <strong>KNN + M2 (Quest)</strong>—achieved strong AUC values despite more modest F1 scores. This indicates good class separation overall, but potentially uneven performance on one class (e.g., lower precision or recall).</p>
-<p>Naive Bayes models exhibited the weakest AUC scores overall, hovering near or below 0.70 in most recipes—confirming their limited predictive value in this project.</p>
+<p>Naive Bayes models exhibited the weakest AUC scores overall, hovering near or below 0.70 in most in most feature sets and across both platforms, confirming their limited predictive value in this project.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-acc" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -3483,7 +3482,7 @@ Figure 5: ROC AUC by Model and Recipe (Grouped by Platform)
 </section>
 <section id="summary-of-best-performing-models" class="level2">
 <h2 class="anchored" data-anchor-id="summary-of-best-performing-models">Summary of Best-Performing Models</h2>
-<p>The tables below present the <strong>top five performing model–recipe combinations for each platform</strong>, ranked by F1 score. These configurations represent the strongest overall performance on the local and Quest pipelines, respectively.</p>
+<p>The tables below present the <strong>top five performing model–feature set combinations for each platform</strong>, ranked by F1 score. These configurations represent the strongest overall performance on the local and Quest pipelines, respectively.</p>
 <div class="cell">
 <div id="tbl-local" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
@@ -3714,22 +3713,22 @@ Table 2: Accuracy by Model and Recipe (Grouped by Platform)
 </figure>
 </div>
 </div>
-<p>Looking at the results in <a href="#tbl-local" class="quarto-xref">Table 1</a> and <a href="#tbl-quest" class="quarto-xref">Table 2</a>, a few patterns stand out.</p>
-<p>The Decision Tree trained on the Kitchen Sink recipe came out on top overall. It had the highest F1, accuracy, and AUC on Quest, and also ranked near the top on Local. It makes sense—Decision Trees can handle mixed data types and capture interactions really well, especially when given access to all variables.</p>
-<p>KNN models also held up surprisingly well, especially in combination with M3 and M4 recipes. These recipes brought in more context—like education, insurance coverage, and ability to afford care—which clearly helped with performance. KNN doesn’t do anything fancy, but it picked up enough signal to compete with more complex models.</p>
+<p>The results presented in Tables <a href="#tbl-local" class="quarto-xref">Table 1</a> and <a href="#tbl-quest" class="quarto-xref">Table 2</a> reveal several consistent patterns across platforms.</p>
+<p>The Decision Tree trained on the full feature set (Kitchen Sink) emerged as the strongest overall performer. It had the highest F1, accuracy, and AUC on Quest, and also ranked near the top on Local. It makes sense—Decision Trees can handle mixed data types and capture interactions really well, especially when given access to all variables.</p>
+<p>KNN models also held up surprisingly well, especially in combination with M3 and M4 recipes. These recipes brought in more context—like education, insurance coverage, and ability to afford care—which clearly helped with performance. While KNN is relatively simple in structure, it effectively leveraged the added context to produce competitive results.</p>
 <p>In contrast, models trained only on M1 (group membership) performed poorly across both platforms. This isn’t too surprising. LGBTQ+ or migrant identity alone doesn’t capture the whole picture—there are deeper structural and socioeconomic drivers of depression that aren’t accounted for in that recipe.</p>
 <p>RuleFit also underperformed in both environments. While it offers interpretability, it might have been too rigid to adapt to the variable complexity or limited by the group-only input.</p>
-<p>Finally, it’s worth noting that the overall rankings stayed consistent between Quest and Local, even though the number of resamples was different. That consistency gives more confidence that the results aren’t just random noise or overfitting to a specific setup. We can see how more context and data leads to better model prediction results.</p>
+<p>Finally, it’s worth noting that the overall rankings stayed consistent between Quest and Local, even though the number of resamples was different. That consistency gives more confidence that the results aren’t just random noise or overfitting to a specific setup. These findings reinforce the value of including sociological and structural context when building predictive models for mental health outcomes.</p>
 </section>
 </section>
 <section id="model-explainability" class="level1">
 <h1>Model Explainability</h1>
 <p>To interpret the inner workings of the top-performing models, I used four complementary explanation methods as outlined in Chapter 18 of <a href="https://www.tmwr.org/explain"><em>Tidy Modeling with R</em></a>: variable importance (VIP), SHAP values, partial dependence plots (PDPs), and local explanation plots. These were applied to two decision tree models trained on the Quest platform:</p>
 <ul>
-<li><strong>Model 1:</strong> Decision Tree trained on the Kitchen Sink recipe</li>
-<li><strong>Model 2:</strong> Decision Tree trained on the M3 recipe</li>
+<li><strong>Model 1:</strong> Decision Treetrained on the full feature set (Kitchen Sink)</li>
+<li><strong>Model 2:</strong> Decision Tree trained on the M3 feature set</li>
 </ul>
-<p>These two models were chosen for their strong predictive performance (<code>F1 ≈ 0.90</code> and <code>F1 ≈ 0.79</code>, respectively) and for capturing two different perspectives: one with the full feature set, and one with a constrained but sociologically rich set of predictors. Together, they offer insight into both what the models learned and how predictions were shaped by variables tied to mental health, identity, and structure.</p>
+<p>These two models were chosen for their strong predictive performance (<code>F1 ≈ 0.90</code> and <code>F1 ≈ 0.79</code>, respectively) and for capturing two different perspectives: one with the full feature set, and one with a constrained but sociologically rich set of predictors. Together, these models provide insight into what the models prioritized and how predictions were influenced by variables related to mental health, identity, and structural inequality.</p>
 <section id="variable-importance-vip" class="level2">
 <h2 class="anchored" data-anchor-id="variable-importance-vip">Variable Importance (VIP)</h2>
 <p>Variable importance plots were generated for both selected models using Gini-based importance scores. These plots reveal which features had the strongest overall influence on model predictions.</p>
@@ -3745,7 +3744,7 @@ Table 2: Accuracy by Model and Recipe (Grouped by Platform)
 </li>
 <li><strong>Age and LGBTQ+ migrant group membership</strong></li>
 </ul>
-<p>These results are expected, since this model includes a wide range of behavioral health and access-to-care variables that are strongly correlated with depression. Variables like anxiety history, depression frequency, and therapy access are directly tied to the outcome and thus dominate the decision paths of the tree.</p>
+<p>These results are expected, since this model includes a wide range of behavioral health and access-to-care variables that are strongly correlated with depression. Variables such as anxiety history, frequency of depressive episodes, and therapy access are directly tied to the outcome and thus dominate the decision paths of the tree.</p>
 <p>In contrast, the <strong>M3 model</strong> (<a href="#fig-vip-m3" class="quarto-xref">Figure 7</a>), which excluded healthcare access variables—showed a different set of top predictors:</p>
 <ul>
 <li><strong>Group membership</strong>, especially LGBTQ+ migrant identity<br>
@@ -3758,8 +3757,8 @@ Table 2: Accuracy by Model and Recipe (Grouped by Platform)
 </li>
 <li><strong>Region and education level</strong></li>
 </ul>
-<p>This model had to rely more heavily on structural and identity-based variables, since it didn’t have direct indicators of healthcare or clinical behavior. As a result, group membership played a much larger role in shaping predictions, along with broader social positioning factors like race, gender, and education.</p>
-<p>Together, these importance plots illustrate how the presence or absence of healthcare access variables changes what the model “pays attention to”—underscoring how variable selection directly affects not just model performance, but the kinds of inferences a model makes.</p>
+<p>This model relied more heavily on structural and identity-based variables, given the absence of direct healthcare indicators. As a result, identity and social positioning played a greater role in shaping predictions.</p>
+<p>Together, these importance plots illustrate how the inclusion or exclusion of certain feature sets—particularly those related to healthcare access—shifts the relative importance of features in shaping model decisions. This underscores how variable selection affects not only predictive performance but also the interpretive framing of depression risk.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-vip-ks" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -3791,16 +3790,19 @@ Figure 7: Variable importance plot for Decision Tree + M3 model
 </section>
 <section id="shap-values" class="level2">
 <h2 class="anchored" data-anchor-id="shap-values">SHAP Values</h2>
-<p>To further interpret how specific features influenced individual predictions, SHAP (SHapley Additive exPlanations) values were computed for both selected models. These plots decompose predictions into additive contributions from each feature for a representative observation.</p>
-<p>In the <strong>Kitchen Sink model</strong> (<a href="#fig-shap-ks" class="quarto-xref">Figure 8</a>), the top SHAP contributors included:</p>
+<p>To further interpret how specific features influenced individual predictions, SHAP (SHapley Additive exPlanations) values were used to assess the contribution of individual features to model predictions. These plots decompose predictions into additive contributions from each input variable for a representative observation.</p>
+<p>In the <strong>Kitchen Sink model</strong> (Figure <a href="#fig-shap-ks" class="quarto-xref">Figure 8</a>), the top SHAP contributors included:</p>
 <ul>
-<li><strong>Depression frequency and level</strong></li>
-<li><strong>Anxiety diagnosis (No)</strong></li>
-<li><strong>Sexual orientation and migrant status</strong></li>
+<li><strong>Depression frequency and level</strong><br>
+</li>
+<li><strong>Anxiety diagnosis (No)</strong><br>
+</li>
+<li><strong>Sexual orientation and migrant status</strong><br>
+</li>
 <li><strong>Lack of mental health therapy</strong></li>
 </ul>
-<p>Here, a combination of behavioral and identity-based factors pushed the prediction toward higher risk. The absence of anxiety history and therapy access had strong negative SHAP contributions, suggesting these were expected in individuals not showing depressive symptoms—so their absence raised red flags.</p>
-<p>In the <strong>M3 model</strong> (<a href="#fig-shap-m3" class="quarto-xref">Figure 9</a>), where behavioral health data was excluded, different patterns emerged. Major contributors included:</p>
+<p>In this case, a combination of behavioral and identity-based factors contributed to higher predicted depression risk. The absence of anxiety history and therapy access had strong negative SHAP contributions, suggesting these features were commonly associated with individuals not exhibiting depressive symptoms—making their absence a significant contributor to elevated risk predictions.</p>
+<p>In the <strong>M3 model</strong> (Figure <a href="#fig-shap-m3" class="quarto-xref">Figure 9</a>), which excluded behavioral health indicators, a different set of patterns emerged. Major contributors included:</p>
 <ul>
 <li><strong>Marital status</strong><br>
 </li>
@@ -3810,8 +3812,8 @@ Figure 7: Variable importance plot for Decision Tree + M3 model
 </li>
 <li><strong>Age and region</strong></li>
 </ul>
-<p>These findings reinforce what the variable importance plots suggested: when clinical indicators are missing, models rely more heavily on structural and demographic cues to make predictions. For example, being married and from certain regions contributed negatively to predicted depression risk, while group membership and lower education drove risk up.</p>
-<p>SHAP adds nuance to feature importance by explaining not just which variables matter, but how they matter in a specific prediction context.</p>
+<p>These findings align with the patterns observed in the variable importance plots: in the absence of clinical indicators, the model relied more heavily on demographic and structural variables. For instance, being married or living in certain regions contributed negatively to predicted depression risk, while group membership and lower educational attainment were associated with increased risk.</p>
+<p>SHAP enhances model interpretability by clarifying not only which features are important, but also how they influence individual predictions.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-shap-ks" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -3843,23 +3845,23 @@ Figure 9: SHAP explanation for a prediction from the M3 model
 </section>
 <section id="partial-dependence-plots-pdps" class="level2">
 <h2 class="anchored" data-anchor-id="partial-dependence-plots-pdps">Partial Dependence Plots (PDPs)</h2>
-<p>Partial dependence plots were used to explore how individual features influence the model’s predicted depression risk, averaged across all observations.</p>
-<p>In the <strong>Kitchen Sink model</strong> (<a href="#fig-pdp-ks" class="quarto-xref">Figure 10</a>), anxiety diagnosis stood out clearly:</p>
+<p>Partial dependence plots (PDPs) were used to explore how individual features influence predicted depression risk, averaged across all individuals in the dataset.</p>
+<p>In the <strong>Kitchen Sink model</strong> (Figure <a href="#fig-pdp-ks" class="quarto-xref">Figure 10</a>), anxiety diagnosis stood out clearly:</p>
 <ul>
 <li>Respondents who had <strong>ever been diagnosed with anxiety</strong> were associated with a <strong>substantially higher</strong> predicted risk of depression.</li>
-<li>This aligns with known clinical relationships between anxiety and depression.</li>
+<li>This aligns with well-established clinical relationships between anxiety and depression.</li>
 </ul>
-<p>Education level also showed subtle trends:</p>
+<p>Education level also revealed subtle trends:</p>
 <ul>
 <li>Depression risk was <strong>slightly higher</strong> for individuals with a GED or partial high school completion.</li>
 <li>The model predicted <strong>lower risk</strong> among those with more advanced degrees (e.g., Master’s, Doctoral), though the differences were not dramatic.</li>
 </ul>
-<p>In the <strong>M3 model</strong> (<a href="#fig-pdp-m3" class="quarto-xref">Figure 11</a>), the absence of clinical variables shifted the pattern:</p>
+<p>In the <strong>M3 model</strong> (Figure <a href="#fig-pdp-m3" class="quarto-xref">Figure 11</a>), the exclusion of clinical variables shifted the patterns:</p>
 <ul>
-<li><strong>Anxiety diagnosis</strong> did not show as strong a separation—reflecting its lower role in the M3 recipe.</li>
-<li>For education, predictions varied less dramatically across categories, but the general trend of lower risk with higher education remained.</li>
+<li><strong>Anxiety diagnosis</strong> did not show as strong a separation—reflecting its exclusion from the M3 feature set.</li>
+<li>For education, predictions varied less across categories, but the general trend of lower risk with higher education remained.</li>
 </ul>
-<p>These PDPs reinforce earlier findings: <strong>behavioral health variables</strong> like anxiety diagnosis dramatically enhance predictive clarity. When those variables are missing (as in M3), structural features like education fill in—but with less separation between groups.</p>
+<p>These PDPs reinforce earlier findings: <strong>behavioral health variables</strong> like anxiety diagnosis provide sharp predictive signals. When such variables are omitted, structural features like education fill the predictive gap, but result in weaker group-level separation.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-pdp-ks" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -3891,7 +3893,7 @@ Figure 11: Partial Dependence – M3 Model (Quest – Decision Tree)
 </section>
 <section id="local-explanations" class="level2">
 <h2 class="anchored" data-anchor-id="local-explanations">Local Explanations</h2>
-<p>To better understand how individual predictions were made, we used local explanation plots from the <code>fastshap</code> package. These visualizations break down the predicted probability for a single observation, showing how each feature contributed to pushing the prediction above or below the model’s base rate (intercept of 0.5). We applied this to both selected decision tree models: <strong>Kitchen Sink</strong> and <strong>M3</strong>, both evaluated on Quest.</p>
+<p>Local explanation plots were used to visualize how individual features contributed to specific predictions. These plots decompose the predicted probability for a single observation, showing how each feature shifted the prediction above or below the model’s baseline (0.5). Explanations were generated for both selected decision tree models: <strong>Kitchen Sink</strong> and <strong>M3</strong>, each trained and evaluated on Quest.</p>
 <section id="kitchen-sink-model" class="level3">
 <h3 class="anchored" data-anchor-id="kitchen-sink-model">Kitchen Sink Model</h3>
 <div class="cell">
@@ -3908,12 +3910,12 @@ Figure 12: Local explanation for a single observation (Kitchen Sink model – D
 </div>
 </div>
 </div>
-<p>In the <strong>Kitchen Sink</strong> model (<a href="#fig-local-ks" class="quarto-xref">Figure 12</a>), the prediction for the selected individual reached a high probability of <strong>0.982</strong>, well above the baseline of 0.5. Key positive contributors included:</p>
+<p>In the <strong>Kitchen Sink</strong> model (Figure <a href="#fig-local-ks" class="quarto-xref">Figure 12</a>), the prediction for the selected individual reached a high probability of <strong>0.982</strong>, far above the baseline of 0.5. Key positive contributors included:</p>
 <ul>
-<li><strong>Anxiety diagnosis</strong> and <strong>depression frequency</strong>: These were by far the most influential variables, together accounting for almost all of the lift in predicted depression risk.</li>
+<li><strong>Anxiety diagnosis</strong> and <strong>depression frequency</strong>, which were by far the most influential variables and together accounted for the vast majority of the increase in predicted risk.</li>
 <li>Identity-based variables such as <strong>sexual orientation (Gay/Lesbian)</strong> and <strong>LGBTQ+ migrant group membership</strong> added small but noticeable effects.</li>
 </ul>
-<p>Negative or neutral contributors included <strong>age</strong>, <strong>region</strong>, and <strong>household tenure</strong>. However, their magnitudes were minimal compared to the dominant behavioral health factors. This confirms that in models where access and mental health variables are available, they overwhelmingly drive predictions.</p>
+<p>Negative or neutral contributors included <strong>age</strong>, <strong>region</strong>, and <strong>household tenure</strong>. However, their magnitudes were minimal compared to the dominant behavioral health factors. This reinforces the earlier findings that when behavioral and access-to-care variables are available, they overwhelmingly shape model predictions.</p>
 </section>
 <section id="m3-model" class="level3">
 <h3 class="anchored" data-anchor-id="m3-model">M3 Model</h3>
@@ -3931,13 +3933,14 @@ Figure 13: Local explanation for a single observation (Kitchen Sink model – D
 </div>
 </div>
 </div>
-<p>In contrast, the <strong>M3</strong> model (<a href="#fig-local-m3" class="quarto-xref">Figure 13</a>) predicted a depression probability of <strong>0.76</strong> for a different individual, relying on a more structural set of features. The largest contributors included:</p>
+<p>In contrast, the <strong>M3</strong> model (Figure <a href="#fig-local-m3" class="quarto-xref">Figure 13</a>) predicted a depression probability of <strong>0.76</strong> for a different individual, relying on a more structural set of features. The largest contributors included:</p>
 <ul>
-<li><strong>Education level (Some college)</strong>, which had a strong positive impact, raising the predicted risk.</li>
-<li><strong>Marital status (Divorced)</strong> and <strong>race (Other)</strong> also contributed toward a higher predicted probability.</li>
+<li><strong>Education level (Some college)</strong>, which had a strong positive impact, raising the predicted risk<br>
+</li>
+<li><strong>Marital status (Divorced)</strong> and <strong>race (Other)</strong> also contributed toward a higher predicted probability</li>
 </ul>
-<p>On the other hand, <strong>being male</strong> and <strong>residing in a large metro area</strong> slightly reduced risk.</p>
-<p>This breakdown shows how the model compensates for the lack of behavioral health data. Without information on anxiety or therapy, the tree shifts weight toward <strong>demographic and social context</strong> still producing a relatively high-risk prediction, but from a very different rationale.</p>
+<p>Conversely, <strong>being male</strong> and <strong>residing in a large metro area</strong> slightly reduced the predicted risk.</p>
+<p>This breakdown illustrates how the model compensates for the absence of behavioral health data. Without information on anxiety or therapy use, the model shifts greater weight toward <strong>demographic and social context</strong>, still producing a relatively high-risk prediction, but based on a very different rationale and feature set.</p>
 </section>
 </section>
 </section>
@@ -3949,27 +3952,28 @@ Figure 13: Local explanation for a single observation (Kitchen Sink model – D
 <p>Both top models highlighted anxiety diagnosis and self-reported depression frequency as key predictors. In the Kitchen Sink model, SHAP values showed that these two variables contributed the majority of the increase from the base prediction probability of 0.5 to a final predicted probability of <strong>0.982</strong> for a representative high-risk individual. While this aligns with known associations between anxiety and depression, it also flags a methodological concern: “depression frequency” may be too close in meaning to the outcome variable (“ever had depression”), risking circularity. Future work should consider removing or redefining this feature to ensure conceptual and temporal separation between predictors and outcomes.</p>
 <p>Differences in model performance across feature sets also carried important sociological implications. Simpler models like M1, which included only LGBTQ+ and migration status, performed notably worse (F-measure <strong>0.674</strong>), while M3 — which added demographic and socioeconomic context — demonstrated a significant jump in predictive power (F-measure <strong>0.812</strong>). This supports long-standing sociological theories that emphasize the importance of structural inequality in shaping health outcomes. Identity alone is insufficient for understanding depression risk without incorporating the broader material and geographic conditions individuals navigate.</p>
 <p>The dataset was stratified and balanced across four subgroups — LGBTQ+ migrants, LGBTQ+ non-migrants, straight migrants, and straight non-migrants — to avoid skewed performance. In doing so, the top models generalized relatively well across these groups, with subgroup F-measures ranging from <strong>0.811</strong> to <strong>0.849</strong> for the Kitchen Sink model. This is promising, given that data-driven systems often underperform for marginalized populations due to underrepresentation.</p>
-<p>Interpretability techniques deepened understanding of model behavior. SHAP plots illuminated global feature influence, partial dependence plots revealed non-linear relationships (e.g., between age and risk), and local explanation plots made it possible to “zoom in” on individual predictions. These tools transformed the model from a black box into an interpretable object — a particularly valuable property in sociological and public health contexts, where trust and transparency are key.</p>
-<p>These interpretability tools each offer a different lens on the model’s behavior. <strong>SHAP values</strong> provide a consistent way to assess how much each feature contributes to individual predictions, accounting for feature interactions. <strong>Partial dependence plots</strong> show how changes in a single variable affect the model’s output while holding other variables constant, revealing non-linear effects like higher depression risk at lower income levels. <strong>Local explanation plots</strong>, such as those generated using the <code>fastshap</code> package, break down the predicted probability for a specific observation and highlight which features pushed the prediction higher or lower. Together, these methods help translate abstract model behavior into tangible insights, making them especially useful in public health and sociological research.</p>
+<p>Interpretability techniques—including SHAP values, partial dependence plots, and local explanations—deepened understanding of model behavior from both global and individual perspectives. These tools transformed the model from a black box into a transparent system, enabling clearer insight into the decision-making process—an especially valuable property in sociological and public health contexts where trust and accountability are essential.</p>
+<p>These interpretability tools each offer a different lens on the model’s behavior. <strong>SHAP values</strong> provide a consistent way to assess how much each feature contributes to individual predictions, accounting for feature interactions. <strong>Partial dependence plots</strong> show how changes in a single variable affect the model’s output while holding other variables constant, revealing non-linear effects like higher depression risk at lower income levels. <strong>Local explanation plots</strong>, such as individualized SHAP-based visualizations, break down the predicted probability for a specific observation and highlight which features pushed the prediction higher or lower. Together, these methods help translate abstract model behavior into tangible insights, making them especially useful in public health and sociological research.</p>
 <p>While decision trees were selected due to their compatibility with interpretability tools, future work should explore the predictive potential of ensemble models like Random Forests or Boosted Trees. Although these are harder to interpret, they may yield improved raw performance. Running them as a benchmark would help clarify whether any significant predictive accuracy was traded off for the sake of explainability — and whether that tradeoff is justified in this context.</p>
-<p>This work demonstrates the value of interpretable machine learning as a bridge between computational rigor and sociological inquiry, enabling both predictive insight and critical reflection on structural health disparities.</p>
+<p>Ultimately, this work demonstrates how interpretable machine learning can serve as a bridge between computational rigor and sociological inquiry—supporting both predictive insight and structural reflection in public health research.</p>
 </section>
 <section id="conclusion" class="level1">
 <h1>Conclusion</h1>
-<p>This thesis set out to predict depression using interpretable machine learning models, with a particular focus on individuals whose identities often place them at the intersection of structural disadvantage, namely LGBTQ+ and migrant populations. Drawing on five years of National Health Interview Survey (NHIS) data, the project combined sociological insight with algorithmic modeling to assess how demographic, medical, and social factors contribute to depression risk.</p>
-<p>Decision trees were chosen for their clarity and compatibility with explainability tools, enabling both strong predictive performance and transparent interpretation. Models trained using the Kitchen Sink and M3 feature sets achieved high F-measure and AUC scores, while SHAP values and local explanation plots made it possible to trace individual-level predictions. Stratifying the dataset across four subgroups ensured fairness across intersectional identities, with only minor variation in performance.</p>
+<p>This thesis set out to predict depression using interpretable machine learning models, with a particular focus on individuals situated at the intersection of structural disadvantage—namely, LGBTQ+ and migrant populations. Drawing on five years of National Health Interview Survey (NHIS) data, the project integrated sociological insight with algorithmic modeling to examine how demographic, medical, and social factors contribute to depression risk.</p>
+<p>Decision trees were selected for their clarity and compatibility with interpretability tools, supporting both strong performance and insight into model behavior. Models trained using the Kitchen Sink and M3 feature sets achieved high F-measure and AUC scores, while SHAP values and local explanation plots made it possible to trace individual-level predictions. Stratifying the dataset across four subgroups ensured fairness across intersectional identities, with only minor variation in performance.</p>
 <p>The findings highlight not only the predictive value of clinical and demographic variables like anxiety diagnosis, income, and regional context, but also the importance of incorporating marginalized identities into model design. While some predictors, such as self-reported depression frequency, raised questions about conceptual overlap, the overall framework demonstrated that it is possible to build both accurate and socially aware models of mental health risk.</p>
-<p>This project contributes to the growing body of work at the intersection of data science and social science by emphasizing transparency, subgroup fairness, and the integration of theory into applied modeling. Future work might explore additional model types, such as random forests or boosted trees, or extend this approach to other health outcomes and survey datasets. More broadly, this work serves as a case study in using machine learning not only to predict, but to reflect, helping surface the structural patterns that shape mental health across identity lines.</p>
+<p>This project contributes to the growing body of work at the intersection of data science and social science by emphasizing transparency, subgroup fairness, and the integration of theory into applied modeling. Future work might explore additional model types, such as random forests or boosted trees, or extend this approach to other health outcomes and survey datasets. More broadly, this work offers a case study in using machine learning not only as a predictive tool, but also as a lens for reflecting on the structural forces that shape mental health across identity lines.</p>
 </section>
 <section id="appendix" class="level1">
 <h1>Appendix</h1>
 <section id="reproducibility-data-access" class="level2">
 <h2 class="anchored" data-anchor-id="reproducibility-data-access">Reproducibility &amp; Data Access</h2>
-<p>All code used in this analysis is available in the accompanying GitHub repository (link below). Due to file size constraints, certain datasets and intermediate files have been uploaded separately to a publicly accessible Google Drive folder:</p>
-<ul>
-<li>Google Drive folder: [Insert link here]</li>
-</ul>
-<p>To fully reproduce the results, users should download the files in that folder and place them in the appropriate directory as noted in the README or code comments. The main script files are structured for execution on both local machines and the Quest high-performance computing cluster.</p>
+<p>This project involved modeling and data processing across two environments: a local machine and Northwestern’s Quest high-performance computing cluster. Due to file size and platform constraints, not all files — including code and outputs from Quest — could be hosted on GitHub.</p>
+<p>Instead, a complete reproducibility folder has been created in Google Drive, which contains: - Full dataset files and modeling outputs - Quest-specific job scripts and results - Final rendered thesis files and figures</p>
+<p>Google Drive folder: <a href="https://drive.google.com/drive/folders/1dKNWv3BAB8BY1Y5YK-MlU2HG12Ur1chd?usp=sharing">Link</a></p>
+<p>Code for preprocessing and local experimentation is available on GitHub:<br>
+<a href="https://github.com/ali3el/alis-thesis.git">Link to Repository</a></p>
+<p>To fully reproduce the results, download the Drive folder, follow the directory structure described in the included README, and refer to the GitHub repo for project context and code dependencies.</p>
 </section>
 </section>
 
