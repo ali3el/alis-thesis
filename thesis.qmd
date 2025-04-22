@@ -20,14 +20,6 @@ execute:
   message: false
 ---
 
-::: {.callout-tip icon=false}
-
-## Github Repo Link
-
-[Link to Repository](https://github.com/ali3el/alis-thesis.git)
-
-:::
-
 ```{r}
 #| echo: FALSE
 library(tidyverse)
@@ -38,9 +30,13 @@ library(knitr)
 load(here("data_combined/dist_barplots.rda"))
 ```
 
-# Abstract
+# Abstract {.unnumbered .unlisted}
 
-Write your abstract here...
+This thesis explores the predictive potential of sociological variables in identifying the risk of depression by employing machine learning techniques. Drawing on five years of data from the National Health Interview Survey (NHIS), the project examines how demographic, socioeconomic, and healthcare access factors—especially those pertaining to migration and LGBTQ+ identity, contribute to depression outcomes. By constructing a balanced dataset across four intersectional groups (LGBTQ+ migrants, LGBTQ+ non-migrants, straight migrants, and straight non-migrants), the study implements and compares multiple classification models, including decision trees, logistic regression, and RuleFit.
+
+Results demonstrate that models incorporating structural and behavioral health variables significantly outperform those relying solely on identity markers. The best-performing model achieved an F1 score of 0.901, indicating high accuracy in identifying individuals with depression while minimizing both false positives and false negatives. It also reached an ROC AUC (Area Under the Receiver Operating Characteristic Curve) of 0.95, meaning the model could distinguish between individuals with and without depression with 95% accuracy.
+
+Explainability tools such as SHAP values and partial dependence plots are used to unpack model decisions, providing insight into how features like anxiety diagnosis, therapy access, and education level shape predictions. This project highlights the importance of integrating social context into data science workflows and presents a transparent, equitable approach to mental health prediction.
 
 \newpage
 
@@ -643,19 +639,27 @@ This project contributes to the growing body of work at the intersection of data
 
 ## Reproducibility & Data Access
 
-This project involved modeling and data processing across two environments: a local machine and Northwestern’s Quest high-performance computing cluster. Due to file size and platform constraints, not all files — including code and outputs from Quest — could be hosted on GitHub.
+This project involved modeling and data processing across two environments:  
+- a local machine, and  
+- Northwestern University’s Quest high-performance computing cluster.
 
-Instead, a complete reproducibility folder has been created in Google Drive, which contains:
-- Full dataset files and modeling outputs
-- Quest-specific job scripts and results
-- Final rendered thesis files and figures
+Due to file size and platform constraints, not all files — including raw outputs from Quest — could be hosted on GitHub.
 
-Google Drive folder: [Link](https://drive.google.com/drive/folders/1dKNWv3BAB8BY1Y5YK-MlU2HG12Ur1chd?usp=sharing)
+Instead, a complete reproducibility folder has been shared via Google Drive. It contains:
 
-Code for preprocessing and local experimentation is available on GitHub:  
-[Link to Repository](https://github.com/ali3el/alis-thesis.git)
+- Cleaned datasets derived from the National Health Interview Survey (NHIS)
+- Model outputs and final figures
+- Quest-specific job scripts
+- The rendered thesis PDF and LaTeX logs
 
-To fully reproduce the results, download the Drive folder, follow the directory structure described in the included README, and refer to the GitHub repo for project context and code dependencies.
+Google Drive folder:  
+[https://drive.google.com/drive/folders/1dKNWv3BAB8BY1Y5YK-MlU2HG12Ur1chd?usp=sharing](https://drive.google.com/drive/folders/1dKNWv3BAB8BY1Y5YK-MlU2HG12Ur1chd?usp=sharing)
+
+Code for preprocessing, modeling, and figure generation is available on GitHub:  
+[https://github.com/ali3el/alis-thesis.git](https://github.com/ali3el/alis-thesis.git)
+
+To fully reproduce the results, download the Drive folder, follow the directory structure described in the included `README`, and refer to the GitHub repo for all code dependencies and documentation.
+
 
 ##
 
