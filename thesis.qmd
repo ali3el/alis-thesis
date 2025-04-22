@@ -9,22 +9,27 @@ format:
   html:
     toc: true
     embed-resources: true
-  # pdf:
-  #   toc: true
-  #   number-sections: true
-  #   lof: true
-  #   lot: true
-  #   page-numbers: true
-  #   cite-method: citeproc
-  #   bibliography: references.bib
-  #   csl: apa.csl
+    citation: true
+    csl: apa.csl
+    bibliography: references.bib
+  pdf:
+    toc: true
+    number-sections: true
+    lof: true
+    lot: true
+    page-numbers: true
+    cite-method: citeproc
+    citation: true
+    csl: apa.csl
+    bibliography: references.bib
+
 citation-style: author-date
-    
+
 execute:
   echo: true
   warning: false
 
-from: markdown+emoji 
+from: markdown+emoji
 ---
 
 ::: {.callout-tip icon=false}
@@ -234,7 +239,7 @@ These models were trained and evaluated using the same cross-validation strategy
 
 To systematically evaluate how different sets of predictors influence model performance, I developed four core preprocessing pipelines (Model Types 1–4), each representing a different level of variable complexity. Each feature set was defined using a structured preprocessing workflow in R, and each had two versions: one for **tree-based models** and one for **non-tree (parametric) models**.
 
-In addition to these four structured pipelines, I also created a separate **Kitchen Sink** recipe that included all available predictors, serving as a maximal model for benchmarking purposes.
+In addition to these four structured pipelines, I also created a separate **Kitchen Sink** feature set that included all available predictors, serving as a maximal model for benchmarking purposes.
 
 ### Predictor Sets by Model Type
 
@@ -251,11 +256,11 @@ In addition to these four structured pipelines, I also created a separate **Kitc
   Included variables related to healthcare usage and access (e.g., number of doctor visits, therapy history, housing status, physical health rating).
 
 - **Kitchen Sink**  
-  A separate recipe that included all available predictors in the dataset, spanning identity, demographic, socioeconomic, behavioral, and healthcare-related variables.
+  A separate feature set that included all available predictors in the dataset, spanning identity, demographic, socioeconomic, behavioral, and healthcare-related variables.
 
-### Tree-Based vs. Non-Tree-Based Recipes
+### Tree-Based vs. Non-Tree-Based Feature Sets
 
-Each model type was implemented using **two parallel recipes** depending on the algorithm class:
+Each model type was implemented using **two parallel feature sets** depending on the algorithm class:
 
 - **Non-Tree-Based Models** (e.g., Logistic Regression, Naive Bayes, KNN):
   - Dummy encoding for categorical variables
@@ -279,7 +284,7 @@ To evaluate the generalizability of all models and reduce the risk of overfittin
 Two resampling configurations were used:
 
 - **Local experiments (exploratory phase):**  
-  Used **4-fold cross-validation with 3 repeats**, resulting in **12 total resamples per model**. This setup allowed for quick prototyping across different recipes and models on a local machine.
+  Used **4-fold cross-validation with 3 repeats**, resulting in **12 total resamples per model**. This setup allowed for quick prototyping across different feature sets and models on a local machine.
 
 - **Final modeling (Quest high-performance cluster):**  
   Used **10-fold cross-validation with 5 repeats**, resulting in **50 resamples per model**. This more rigorous configuration provided stable and generalizable performance estimates for final evaluation.
@@ -314,7 +319,7 @@ To support both experimentation and scalability, models were run on two platform
 Each model-feature set combination was run on only one platform, not both, meaning the evaluation reflects the pairing of model, feature set, and compute environment. The primary evaluation metric was **F1 score**, with **accuracy**, **ROC AUC**, **precision**, and **recall** used as secondary evaluation criteria.
 
 
-## Model and Recipe Comparison
+## Model and Feature Sets Comparison
 
 The best-performing configuration was a **Decision Tree trained on the full feature set (Kitchen Sink)**, trained and evaluated on the **Quest** high-performance computing cluster. This model achieved:
 
@@ -335,7 +340,7 @@ In contrast, models trained on **M1 (Group Membership Only)** showed significant
 
 ```{r}
 #| label: fig-f1
-#| fig-cap: "F1 Scores by Model and Recipe (Grouped by Platform)"
+#| fig-cap: "F1 Scores by Model and Feature Set (Grouped by Platform)"
 #| echo: false
 load(here("visualizations/plots/combined_model_comparison_plots.rda"))
 f1_plot
@@ -355,14 +360,14 @@ Naive Bayes models exhibited the weakest AUC scores overall, hovering near or be
 
 ```{r}
 #| label: fig-acc
-#| fig-cap: "Accuracy by Model and Recipe (Grouped by Platform)"
+#| fig-cap: "Accuracy by Model and Feature Set (Grouped by Platform)"
 #| echo: false
 accuracy_plot
 ```
 
 ```{r}
 #| label: fig-roc
-#| fig-cap: "ROC AUC by Model and Recipe (Grouped by Platform)"
+#| fig-cap: "ROC AUC by Model and Feature Set (Grouped by Platform)"
 #| echo: false
 roc_plot
 ```
@@ -374,7 +379,7 @@ The tables below present the **top five performing model–feature set combinati
 
 ```{r}
 #| label: tbl-local
-#| tbl-cap: "Accuracy by Model and Recipe (Grouped by Platform)"
+#| tbl-cap: "Accuracy by Model and Feature Set (Grouped by Platform)"
 #| echo: false
 load(here("master_comparison/local_model_results.rda"))
 local_best_models |>
@@ -385,7 +390,7 @@ local_best_models |>
 
 ```{r}
 #| label: tbl-quest
-#| tbl-cap: "Accuracy by Model and Recipe (Grouped by Platform)"
+#| tbl-cap: "Accuracy by Model and Feature Set (Grouped by Platform)"
 #| echo: false
 load(here("master_comparison/quest_model_results.rda"))
 quest_best_models |>
@@ -398,9 +403,9 @@ The results presented in Tables @tbl-local and @tbl-quest reveal several consist
 
 The Decision Tree trained on the full feature set (Kitchen Sink) emerged as the strongest overall performer. It had the highest F1, accuracy, and AUC on Quest, and also ranked near the top on Local. It makes sense—Decision Trees can handle mixed data types and capture interactions really well, especially when given access to all variables.
 
-KNN models also held up surprisingly well, especially in combination with M3 and M4 recipes. These recipes brought in more context—like education, insurance coverage, and ability to afford care—which clearly helped with performance. While KNN is relatively simple in structure, it effectively leveraged the added context to produce competitive results.
+KNN models also held up surprisingly well, especially in combination with M3 and M4 feature sets. These sets brought in more context—like education, insurance coverage, and ability to afford care—which clearly helped with performance. While KNN is relatively simple in structure, it effectively leveraged the added context to produce competitive results.
 
-In contrast, models trained only on M1 (group membership) performed poorly across both platforms. This isn't too surprising. LGBTQ+ or migrant identity alone doesn't capture the whole picture—there are deeper structural and socioeconomic drivers of depression that aren't accounted for in that recipe.
+In contrast, models trained only on M1 (group membership) performed poorly across both platforms. This isn't too surprising. LGBTQ+ or migrant identity alone doesn't capture the whole picture—there are deeper structural and socioeconomic drivers of depression that aren't accounted for in that feature set.
 
 RuleFit also underperformed in both environments. While it offers interpretability, it might have been too rigid to adapt to the variable complexity or limited by the group-only input.
 
