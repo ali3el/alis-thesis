@@ -26,6 +26,8 @@ library(tidyverse)
 library(tidymodels)
 library(here)
 library(knitr)
+library(kableExtra)
+
 
 load(here("data_combined/dist_barplots.rda"))
 ```
@@ -72,35 +74,40 @@ The objective is to build a technically rigorous, interpretable, and generalizab
 \newpage
 # Literature Review
 
-Although depression has been widely studied across disciplines, most existing research focuses on documenting disparities or testing associations, rather than developing predictive models. This thesis contributes to a growing body of work that leverages machine learning to predict mental health outcomes, while incorporating sociologically meaningful variables such as race, gender identity, sexual orientation, and migration status. By emphasizing interpretability, this project bridges technical rigor with social awareness.
+Depression has been widely studied across fields such as psychology, public health, and sociology, with a large body of work documenting disparities in mental health outcomes by race, gender identity, and migration status (@U_R._2010). Much of this research emphasizes identifying correlates and structural risk factors, often without building predictive models that can support early intervention or clinical decision-making (@I_Tan_2020).
 
-This work sits at the intersection of two under-connected literatures — sociological theory on structural inequality and algorithmic modeling in health research — and aims to address the limitations of both.
+At the same time, machine learning has become an increasingly common tool in mental health research, applied to predict outcomes from electronic health records, behavioral data, and self-report surveys (@M_B._2019, 2019; @M_B._2018). However, many of these models prioritize predictive performance over interpretability and often exclude identity-based variables that are crucial for understanding disparities.
+
+This thesis contributes to an emerging space that integrates sociological insight into algorithmic modeling. By incorporating sociologically meaningful variables—such as race, gender identity, sexual orientation, and migration status—and applying interpretable ML techniques, it aims to bridge a gap between structural theories of inequality and computational approaches to health.
 
 ## Machine Learning for Mental Health Prediction
 
-Recent years have seen increased use of machine learning (ML) in mental health research, including efforts to predict depression from electronic health records, online behavior, or self-report surveys. For example, Nickson et al. (2023) conducted a systematic review of ML-based approaches using electronic health records to predict depression, highlighting a wide range of models, including logistic regression, support vector machines, and ensemble methods, while also acknowledging the lack of subgroup-specific evaluation (@P_Nickson_2023). Similarly, Lee and Ham (2022) reviewed recent applications of machine learning in early depression diagnosis and noted the dominance of black-box models that prioritize performance over interpretability (@M_Lee_2022).
+Machine learning (ML) has become an increasingly common tool in mental health research, with applications ranging from prediction of depression to risk classification for suicide and anxiety. Many recent studies use data sources such as electronic health records, social media activity, or survey responses to train predictive models (@M_B._2019, 2019; @M_B._2018). For instance, Nickson et al. (2023) reviewed ML approaches using health records to predict depression, highlighting the use of algorithms such as logistic regression, support vector machines, and ensemble methods—but noted the absence of subgroup-specific evaluations (@P_Nickson_2023). Similarly, Lee and Ham (2022) observed that black-box models dominate the field, often prioritizing performance over interpretability (@M_Lee_2022).
 
-Even studies that aim to improve interpretability often focus on feature engineering or performance tuning, without accounting for identity-based variation in prediction quality. Furthermore, many predictive models operate as “black boxes,” offering high accuracy but limited insight into the mechanisms behind their predictions. This thesis builds on emerging work that employs interpretable models—such as decision trees—alongside model explanation techniques like SHAP values and partial dependence plots, in order to provide transparent, actionable insights. The approach incorporates repeated cross-validation, subgroup balancing, and structured data preparation—key components of a robust predictive modeling framework.
+Even studies that emphasize interpretability often focus on model structure or feature importance, without assessing variation in predictive performance across demographic or identity-based subgroups. This lack of subgroup stratification limits our ability to evaluate fairness or diagnostic reliability for marginalized populations. As Rudin (2019) argues, black-box models may be ill-suited for high-stakes decisions, especially when transparency and accountability are critical (@S_Rudin_2019).
 
-Few existing studies stratify model performance across intersectional identities, making it difficult to assess fairness or subgroup validity in mental health prediction. This project addresses that gap directly.
+This thesis builds on a growing movement toward interpretable machine learning by using models such as decision trees, and applying explanation techniques like SHAP values and partial dependence plots. The modeling approach integrates repeated cross-validation, subgroup balancing, and structured preprocessing to ensure both robustness and fairness. Unlike much prior work, this project evaluates prediction accuracy across intersectional subgroups, directly addressing a gap in existing mental health prediction research.
+
 
 ## Sociological Determinants of Depression
 
-Extensive research has shown that LGBTQ+ individuals and migrants face elevated risks of depression, anxiety, and related mental health conditions. These disparities are shaped by chronic exposure to stress, discrimination, and systemic barriers to care. For example, LGB adults are significantly more likely to experience depression and suicidal ideation than their heterosexual peers (@M_M._2021). Migrants often face compounded stress from legal precarity, social isolation, and acculturative pressures, which can further increase risk. Structural inequalities — such as housing insecurity, lack of insurance, and regional disparities in care — also play a key role.
+Extensive research has shown that LGBTQ+ individuals and migrants face elevated risks of depression, anxiety, and related mental health conditions. These disparities are shaped by chronic exposure to minority stress, discrimination, and systemic barriers to care (@P_H._2013; @D_R._2009). For example, sexual minority adults are significantly more likely to experience depression and suicidal ideation than their heterosexual peers (@M_M._2021). Migrants, likewise, often face compounded stress from legal precarity, social isolation, and acculturative pressures, which further increase psychological vulnerability (@Health2023). Structural inequalities—such as housing insecurity, lack of insurance, and regional disparities in care—also play a significant role in shaping mental health outcomes.
 
-Medical comorbidities, often more prevalent in marginalized groups, further complicate the mental health landscape. Conditions such as hypertension (@M_A_2014), cholesterol imbalance (@fiedorowicz2010cholesterol), cardiovascular disease (@L_A._2024), chronic obstructive pulmonary disease (COPD) (@F_T._2024), and inflammatory bowel disease (IBD) (@eidelberg2023ibd) have all been linked to increased risk of depression. These health conditions disproportionately affect LGBTQ+ individuals, adding biomedical complexity to social disadvantage.
+Medical comorbidities, often more prevalent in marginalized groups, further complicate this landscape. Conditions such as hypertension (@M_A_2014), cholesterol imbalance (@fiedorowicz2010cholesterol), cardiovascular disease (@L_A._2024), and chronic obstructive pulmonary disease (COPD) (@F_T._2024) have all been associated with increased risk of depression. Some of these health conditions, particularly cardiovascular disease and COPD, have been shown to disproportionately affect LGBTQ+ individuals, adding biomedical complexity to social disadvantage.
 
-While these patterns are well-established in the public health literature, they are rarely integrated into predictive frameworks that account for both medical and social risk factors.
+Although these patterns are well-established in the public health literature, they are infrequently incorporated into predictive modeling frameworks that account for both social identity and clinical risk. This thesis addresses that gap by integrating structural and biomedical features into an interpretable machine learning approach.
 
 ## Bridging Disciplinary Gaps
 
-Sociological literature frequently invokes theories of intersectionality and minority stress to explain disparities in mental health. However, much of this research remains qualitative or descriptive, and rarely incorporates large-scale datasets. On the other hand, many data science applications ignore identity-based variables or fail to contextualize their predictions within structural inequalities. This thesis seeks to bridge these gaps by combining interpretable modeling with identity- and condition-based features derived from five years of the National Health Interview Survey (NHIS).
+Sociological literature frequently draws on frameworks like intersectionality and minority stress to explain disparities in mental health (@M_Crenshaw_1991; @P_H._2013). While qualitative and descriptive approaches have shaped much of this research, relatively fewer studies use large-scale, quantitative data to build predictive models. Conversely, many machine learning applications in health research prioritize predictive performance and may overlook identity-based variables or fail to contextualize their outputs within structural inequalities.
 
-The minority stress model (@P_H._2013) has been instrumental in explaining elevated mental health risks among LGBTQ+ individuals, but such frameworks have not yet been operationalized through algorithmic modeling. Similarly, few studies explore how these dynamics interact with migration status in statistical models.
+This thesis seeks to bridge these gaps by combining interpretable modeling with identity- and condition-based features derived from five years of the National Health Interview Survey (NHIS). The minority stress model (@P_H._2013) has been instrumental in explaining elevated mental health risks among LGBTQ+ individuals, yet it is rarely operationalized in algorithmic modeling. Similarly, limited work explores how these dynamics intersect with migration status in statistical models.
 
-The inclusion of features like anxiety history, physical comorbidities, and demographic identity reflects an intentional blending of sociological theory with algorithmic modeling. By balancing the dataset across LGBTQ+ and migrant subgroups and applying explainability techniques, this project aims to build not only accurate but also socially conscious predictive tools.
+By including features such as anxiety history, physical comorbidities, and demographic identity, this project reflects an intentional blending of sociological theory with machine learning practice. Through dataset balancing and the use of explainability tools, the resulting models aim to be not only accurate but also socially conscious.
 
-Unlike most prior work, this thesis evaluates model fairness across four distinct subgroups (LGBTQ+ migrants, LGBTQ+ non-migrants, straight migrants, straight non-migrants), offering one of the first intersectional evaluations of depression prediction performance using interpretable machine learning.
+To our knowledge, few prior studies have conducted intersectional evaluations of depression prediction using interpretable machine learning. This project contributes to that gap by comparing model performance across four subgroups—LGBTQ+ migrants, LGBTQ+ non-migrants, straight migrants, and straight non-migrants—thereby offering a novel and equity-focused approach to mental health prediction.
+
+
 
 \newpage
 
@@ -233,8 +240,6 @@ To explore a range of predictive strategies, I implemented five classification a
 
 These models were trained and evaluated using the same cross-validation strategy on the balanced 40k dataset. The goal was to assess how different learning algorithms perform in predicting depression outcomes using sociologically-informed variables.
 
-## Parameters Tuning
-
 
 ## Preprocessing Pipelines - Feature Engineering
 
@@ -321,16 +326,17 @@ To support both experimentation and scalability, models were run on two platform
 
 Each model-feature set combination was run on only one platform, not both, meaning the evaluation reflects the pairing of model, feature set, and compute environment. The primary evaluation metric was **F1 score**, with **accuracy**, **ROC AUC**, **precision**, and **recall** used as secondary evaluation criteria.
 
+Before evaluating model performance, I fine-tuned the settings for each algorithm using a structured trial-and-error process known as grid search. On local runs, this involved testing 5 different values for each model setting. On Quest, the high-performance cluster, I expanded this to 15 values to take advantage of the additional computing power. This helped ensure that each model was evaluated using its best configuration, based on F1 score.
 
 ## Model and Feature Sets Comparison
 
 The best-performing configuration was a **Decision Tree trained on the full feature set (Kitchen Sink)**, trained and evaluated on the **Quest** high-performance computing cluster. This model achieved:
 
-- **F1 Score:** ≈ 0.901  
-- **Accuracy:** ≈ 0.90  
-- **ROC AUC:** ≈ 0.95  
-- **Precision:** 0.91  
-- **Recall:** 0.93  
+- **F1 Score:** $\approx 0.901  
+- **Accuracy:** $\approx 0.90  
+- **ROC AUC:** $\approx 0.95  
+- **Precision:** $\approx 0.91  
+- **Recall:** $\approx 0.93  
 
 Other high-performing configurations included:
 
@@ -384,10 +390,19 @@ The tables below present the **top five performing model–feature set combinati
 #| label: tbl-local
 #| tbl-cap: "Accuracy by Model and Feature Set (Grouped by Platform) - Local"
 #| echo: false
+
 load(here("master_comparison/local_model_results.rda"))
+
 local_best_models |>
   mutate(across(where(is.numeric), ~ round(.x, 3))) |>
-  knitr::kable()
+  rename(
+    `F1 Score` = f_meas,
+    `ROC AUC` = roc_auc,
+    `Std. Error (F1)` = std_err_f_meas,
+    `Attempt` = attempt,
+    `Platform` = platform,
+    `Feature Set` = recipe
+  ) |> kable()
 
 ```
 
@@ -395,10 +410,18 @@ local_best_models |>
 #| label: tbl-quest
 #| tbl-cap: "Accuracy by Model and Feature Set (Grouped by Platform) - Quest"
 #| echo: false
+#| results: 'asis'
 load(here("master_comparison/quest_model_results.rda"))
 quest_best_models |>
-  mutate(across(where(is.numeric), ~ round(.x, 3))) |> 
-  knitr::kable()
+  mutate(across(where(is.numeric), ~ round(.x, 3))) |>
+  rename(
+    `F1 Score` = f_meas,
+    `ROC AUC` = roc_auc,
+    `Std. Error (F1)` = std_err_f_meas,
+    `Attempt` = attempt,
+    `Platform` = platform,
+    `Feature Set` = recipe
+  ) |> kable()
 
 ```
 
