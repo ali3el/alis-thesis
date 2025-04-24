@@ -43,7 +43,8 @@ local_best_models <- local_summary_all |>
   group_by(attempt) |>
   filter(f_meas == max(f_meas, na.rm = TRUE)) |>
   ungroup() |>
-  arrange(attempt)
+  arrange(desc(f_meas), desc(roc_auc)) |>
+  slice_head(n = 5)
 
 
 # ---- STEP 6: (Optional) Save cleaned full dataset ----
