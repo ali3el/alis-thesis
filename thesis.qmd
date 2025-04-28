@@ -185,8 +185,8 @@ Across all models, the inclusion of predictors was partly informed by existing p
 ## Modeling Workflow Overview
 To support experimentation and scalability, I constructed two modeling pipelines:
 
-- A **local pipeline** using a downsampled, group-balanced dataset (~40,000 observations) to quickly prototype models and test different variable sets.
-- A **high-performance pipeline** run on Northwestern University’s Quest computing cluster, also using the **same downsampled dataset** (~40,000 observations) due to computational and runtime constraints.
+- A **local pipeline** using a downsampled, group-balanced dataset (40,000 observations) to quickly prototype models and test different variable sets.
+- A **high-performance pipeline** run on Northwestern University’s Quest computing cluster, also using the **same downsampled dataset** (40,000 observations) due to computational and runtime constraints.
 
 This streamlined approach maintained consistency across environments, allowing for fast iteration and robust evaluation, while ensuring that all modeling decisions were transferable between the smaller and larger datasets.
 
@@ -203,7 +203,7 @@ To investigate how mental health outcomes differ across social identities, I con
 3. Straight migrants  
 4. Straight non-migrants
 
-Initial exploration of the NHIS dataset revealed substantial class imbalance, both in the distribution of the target variable (depression) and in the sizes of these identity groups. To mitigate bias and ensure fair representation across all four subgroups, I created a **balanced analytical dataset of approximately 40,000 observations**, with roughly **10,000 observations per group**.
+Initial exploration of the NHIS dataset revealed substantial class imbalance, both in the distribution of the target variable (depression) and in the sizes of these identity groups. To mitigate bias and ensure fair representation across all four subgroups, I created a **balanced analytical dataset of 40,000 observations**, with **10,000 observations per group**.
 
 This dataset was constructed using a combination of **increasing the number of samples in underrepresented groups (upsampling)** and **downsampling overrepresented ones**. By maintaining balance across the four identity-based groups, this approach allowed for a clearer comparison of model performance and subgroup disparities without the confounding effects of unequal sample sizes.
 
@@ -338,17 +338,17 @@ Before evaluating model performance, I fine-tuned the settings for each algorith
 
 The best-performing configuration was a **Decision Tree trained on the full feature set (Kitchen Sink)**, trained and evaluated on the **Quest** high-performance computing cluster. This model achieved:
 
-- **F1 Score:**  ≈  0.901  
-- **Accuracy:**  ≈  0.90  
-- **ROC AUC:**  ≈  0.95  
-- **Precision:**  ≈  0.91  
-- **Recall:**  ≈  0.93  
+- **F1 Score:** ~ 0.901  
+- **Accuracy:** ~ 0.90  
+- **ROC AUC:** ~ 0.95  
+- **Precision:** ~ 0.91  
+- **Recall:** ~ 0.93  
 
 Other high-performing configurations included:
 
-- **K-Nearest Neighbors + M4** (Local): strong overall balance with `F1 ≈ 0.82`  
-- **K-Nearest Neighbors + M3** (Quest): `F1 ≈ 0.80`  
-- **RuleFit + Kitchen Sink** (Quest): `F1 ≈ 0.89`, slightly below Decision Tree
+- **K-Nearest Neighbors + M4** (Local): strong overall balance with `F1 ~ 0.82`  
+- **K-Nearest Neighbors + M3** (Quest): `F1 ~ 0.80`  
+- **RuleFit + Kitchen Sink** (Quest): `F1 ~ 0.89`, slightly below Decision Tree
 
 In contrast, models trained on **M1 (Group Membership Only)** showed significantly lower F1 scores, especially on Local runs, indicating that identity group alone is not a sufficiently strong predictor of depression risk.
 
@@ -358,7 +358,7 @@ In contrast, models trained on **M1 (Group Membership Only)** showed significant
 #| fig-cap: "F1 Scores by Model and Feature Set (Grouped by Platform)"
 #| echo: false
 load(here("visualizations/plots/combined_model_comparison_plots.rda"))
-f1_plot + xlab("Feature Set")
+f1_plot + ggtitle("F1 Score by Feature Set and Model (Local vs Quest)") + xlab("Feature Set")
 ```
 
 ## Accuracy and ROC AUC Trends
@@ -378,7 +378,7 @@ Naive Bayes models exhibited the weakest AUC scores overall, hovering near or be
 #| fig-cap: "Accuracy by Model and Feature Set (Grouped by Platform)"
 #| echo: false
 #| fig-pos: "H"
-accuracy_plot + xlab("Feature Set")
+accuracy_plot + ggtitle("Accuracy by Feature Set and Model (Local vs Quest)") + xlab("Feature Set")
 ```
 
 ```{r}
@@ -386,7 +386,7 @@ accuracy_plot + xlab("Feature Set")
 #| fig-cap: "ROC AUC by Model and Feature Set (Grouped by Platform)"
 #| echo: false
 #| fig-pos: "H"
-roc_plot + xlab("Feature Set")
+roc_plot + ggtitle("ROC AUC by Feature Set and Model (Local vs Quest)") + xlab("Feature Set")
 ```
 
 ## Summary of Best-Performing Models
@@ -409,10 +409,13 @@ local_best_models |>
     `F1 Score` = f_meas,
     `ROC AUC` = roc_auc,
     `Std. Error (F1)` = std_err_f_meas,
-    `Attempt` = attempt,
-    `Platform` = platform,
-    `Feature Set` = recipe
-  ) |> 
+    `Attempt  ` = attempt,
+    ` Platform ` = platform,
+    `Model` = model,
+    `Accuracy  ` = accuracy,
+    `   Precision ` = precision,
+    `Recall` = recall,
+    `Feature Set` = recipe) |>
   kable()
 
 ```
@@ -430,10 +433,14 @@ quest_best_models |>
     `F1 Score` = f_meas,
     `ROC AUC` = roc_auc,
     `Std. Error (F1)` = std_err_f_meas,
-    `Attempt` = attempt,
-    `Platform` = platform,
-    `Feature Set` = recipe
-  ) |> kable()
+    `Attempt  ` = attempt,
+    ` Platform ` = platform,
+    `Model` = model,
+    `Accuracy  ` = accuracy,
+    `   Precision ` = precision,
+    `Recall` = recall,
+    `Feature Set` = recipe) |>
+  kable()
 
 ```
 
@@ -683,6 +690,10 @@ The findings highlight not only the predictive value of clinical and demographic
 
 This project contributes to the growing body of work at the intersection of data science and social science by emphasizing transparency, subgroup fairness, and the integration of theory into applied modeling. Future work might explore additional model types, such as random forests or boosted trees, or extend this approach to other health outcomes and survey datasets. More broadly, this work offers a case study in using machine learning not only as a predictive tool, but also as a lens for reflecting on the structural forces that shape mental health across identity lines.
 
+Furthermore, this project demonstrates how machine learning can be used to operationalize key sociological theories, particularly the concept of intersectionality introduced by Kimberlé Crenshaw. Rather than treating LGBTQ+ identity and migration status as isolated variables, the modeling approach recognized their interaction as a compounding source of disadvantage, aligning with Crenshaw’s framing of intersecting structures of oppression. The findings show that depression risk is best predicted not by identity markers alone, but through the interplay of structural conditions such as access to healthcare and economic resources. This highlights an important implication for sociology: computational methods, when designed with theoretical sensitivity, can help make intersectionality actionable in large-scale empirical research, offering a new pathway for studying how overlapping forms of inequality shape health outcomes.
+
+
+
 \newpage
 
 # References
@@ -712,7 +723,8 @@ Google Drive folder:
 
 - [Link](https://drive.google.com/drive/folders/1dKNWv3BAB8BY1Y5YK-MlU2HG12Ur1chd?usp=sharing)
 
-Code for preprocessing, modeling, and figure generation is available on GitHub:  
+Code for preprocessing, modeling, and figure generation is available on GitHub:
+
 - [Link](https://github.com/ali3el/alis-thesis.git)
 
 To fully reproduce the results, download the Drive folder, follow the directory structure described in the included `README`, and refer to the GitHub repo for all code dependencies and documentation.

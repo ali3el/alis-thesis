@@ -22,7 +22,12 @@ The structure remains consistent with the original Quest organization, with mult
 - `Project.Rproj`: RStudio project file for easy navigation in this local environment.
 - `thesis.qmd`: Quarto file for compiling the final report or paper.
 - `thesis.html`: Rendered output from the Quarto report.
-- `.Rhistory`, `.gitignore`, `.DS_Store`: Standard config and environment tracking files from RStudio and macOS.
+- `thesis.pdf`: Final compiled PDF version of the thesis, incorporating LaTeX formatting.
+- `apa.csl`: Citation style file (APA 7th Edition), used for consistent reference formatting.
+- `references.bib`: BibTeX bibliography file containing all citation entries.
+- `preamble.tex`: LaTeX preamble file, configuring document settings for PDF output.
+- `title-page.tex`: LaTeX file containing the customized title page for the thesis.
+- `preamle.tex.save`: Auto-save backup of preamble.tex (minor file, not actively used).
 
 ---
 
