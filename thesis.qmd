@@ -13,6 +13,11 @@ format:
     toc-depth: 2
     csl: apa.csl
     bibliography: references.bib
+    colorlinks: true
+    linkcolor: black
+    urlcolor: black
+    citecolor: black
+    filecolor: black
 
 execute:
   echo: false
@@ -32,6 +37,59 @@ library(kableExtra)
 load(here("data_combined/dist_barplots.rda"))
 ```
 
+\pagenumbering{roman}
+\newpage
+\thispagestyle{plain}
+
+\begin{center}
+\vspace*{\fill}
+
+\textcopyright\ Copyright by
+
+\vspace{1em}
+
+Ali Slayie
+
+\vspace{1em}
+
+2025
+
+\vspace*{\fill}
+\end{center}
+
+# Acknowledgements {.unnumbered .unlisted}
+
+\begin{center}
+\textit{In the spirit of healing, we acknowledge and honor the Potawatomi, Odawa \\ 
+and Ojibwe Tribes, the original people of the land upon which Northwestern University \\
+stands, and the Native people who remain on this land today.}
+\end{center}
+
+First and foremost, my deepest gratitude goes to Professor David William Schieber, who responded within minutes when I reached out in the summer of 2024 to introduce myself and ask if he would consider supervising my thesis. His immediate support and continued mentorship throughout my senior year have meant a great deal. Thank you for being one of the professors at Northwestern who truly exemplify what it means to care about both student learning and well-being.
+
+I’m also sincerely grateful to Professor Arend Kuyper, whose guidance and expertise in Data Science helped shape this project. His thoughtful feedback and steady support, starting at the end of my third year, gave me both structure and confidence as I explored this interdisciplinary work.
+
+The United World College (UWC) movement and community have my heartfelt thanks. Through UWC Syria, I received a scholarship to complete my final two years of high school following the International Baccalaureate (IB) curriculum at UWC East Africa in Tanzania, an experience that profoundly shaped my values, goals, and understanding of education. I’m also deeply appreciative of Shelby Moore Cullom Davis and Philip O. Geier, whose generosity through the Davis UWC Scholars Program made it possible for me, as a UWC graduate, to attend a partner institution like Northwestern University.
+
+I often think of my 14-year-old self in Syria, just finishing middle school and dreaming, quite literally, of studying at a university in the U.S. Any U.S. institution felt like an impossible hope, given the war, financial insecurity, language barriers, and uncertainty around how to even apply. Attending Northwestern University on a full scholarship still feels surreal. The opportunities made possible by UWC and the Davis Scholarship turned a distant dream into a lived reality.
+
+I’m especially thankful to my mother, Sana Al Nokari, for her support during pivotal moments in my educational journey, particularly when I was applying to UWC. In a context where many parents might discourage unfamiliar paths or hold tightly to tradition, she trusted me, listened, and allowed me to choose my own direction as a 15-year-old. I'm also grateful to my cousins Jinan Moustafa. and Rawan Moustafa. Jinan, in particular, mentored and guided me during that time, and both offered encouragement that helped me pursue what I believed in.
+
+Special thanks go to Miss Kate Swope, my IB Visual Arts and Theory of Knowledge (TOK) teacher and mentor, who has continued to show up for me long after high school. She was the first educator who truly made me feel seen, not just as a student, but as a whole person. Whether helping me navigate perfectionism in art, guiding me through the college application process, or simply checking in regularly, she embodied what it means to be a great teacher. She also inspired me to protect and value my own curiosity and identity, and I carry that influence with me to this day.
+
+To my UWC friends who have continued to show up for me beyond our time together, thank you for your ongoing support, kindness, and friendship. No matter where in the world you are now, your presence in my life continues to mean so much. In no particular order: Lydia Namuganga, Kritika Oli, Amr Al Dayeh, Nibia Becerra, Raluca Griogoras, Jube John Augustino — thank you. 
+
+To my Northwestern friends, thank you for making my experience as an international, first-generation, low-income student not only doable, but deeply meaningful. Whether we were talking for hours instead of studying, grabbing food and boba in Evanston, braving the cold, or simply showing up when it mattered most, your presence made this journey far less isolating and far more fulfilling. No matter where life takes you, know that I carry these moments and your friendship with me. In no particular order: Yaelle Pierre, Rhema Phiri, Gabriela Tucker, Tolani Bademosi, Audrey Benitez, Eduardo Ramos, Lily Ng, Mirabella Johnson, Jeff Kimuri — thank you.
+
+This project represents the intersection of my academic and personal commitments: using what I’ve learned in Data Science and Sociology to explore how we can better evaluate and support the mental health of LGBTQ+ migrants.
+
+There is so much nuance to what it means to be an immigrant. For many, migration is not a choice—it is a necessity. As Warsan Shire writes: “No one leaves home unless home is the mouth of a shark.” As of 2024, 64 countries still criminalize consensual same-sex relationships, with punishments ranging from imprisonment to the death penalty.
+
+As a queer migrant from a region where simply being LGBTQ+ can be life-threatening, I dedicate this thesis to those who leave home hoping to find one. This work is a reminder that their voices, safety, and futures matter.
+
+\newpage
+
+
 # Abstract {.unnumbered .unlisted}
 
 This thesis explores the predictive potential of sociological variables in identifying the risk of depression by employing machine learning techniques. Drawing on five years of data from the National Health Interview Survey (NHIS), the project examines how demographic, socioeconomic, and healthcare access factors, especially those pertaining to migration and LGBTQ+ identity, contribute to depression outcomes. By constructing a balanced dataset across four intersectional groups (LGBTQ+ migrants, LGBTQ+ non-migrants, straight migrants, and straight non-migrants), the study implements and compares multiple classification models, including decision trees, logistic regression, and RuleFit.
@@ -50,6 +108,9 @@ Explainability tools such as SHAP values and partial dependence plots are used t
 
 \listoftables
 \newpage
+
+\clearpage
+\pagenumbering{arabic}
 
 # Introduction
 

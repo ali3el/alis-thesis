@@ -1,3 +1,9 @@
+\usepackage{fontspec}
+\setmainfont{Times New Roman}
+
+\usepackage{sectsty}
+\allsectionsfont{\rmfamily}
+
 \usepackage{titling}
 \pretitle{\begin{center}\LARGE\bfseries}
 \posttitle{\par\end{center}\vskip 1em}
@@ -5,3 +11,23 @@
 \postauthor{\par\end{center}}
 \predate{\begin{center}\large}
 \postdate{\par\end{center}}
+
+\usepackage{tocloft}
+\renewcommand{\cftsecfont}{\rmfamily}
+\renewcommand{\cftsubsecfont}{\rmfamily}
+\renewcommand{\cftsubsubsecfont}{\rmfamily}
+\renewcommand{\cftsecpagefont}{\rmfamily}
+\renewcommand{\cftsubsecpagefont}{\rmfamily}
+\renewcommand{\cftsubsubsecpagefont}{\rmfamily}
+
+\usepackage{xcolor}
+\usepackage[
+  colorlinks=true,
+  linkcolor=black,
+  urlcolor=black,
+  citecolor=black,
+  filecolor=black
+]{hyperref}
+
+
+
